@@ -2,8 +2,9 @@ import { useState } from 'react';
 import Home from './components/Home';
 import SyllabusUpload from './components/SyllabusUpload';
 import CourseDetail from './components/CourseDetail';
+import Dashboard from './components/Dashboard';
 
-type Page = 'home' | 'upload' | 'detail';
+type Page = 'home' | 'upload' | 'detail' | 'dashboard';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -84,6 +85,32 @@ function App() {
                 Home
               </button>
               <button
+                onClick={() => setCurrentPage('dashboard')}
+                style={{
+                  padding: '8px 20px',
+                  backgroundColor: currentPage === 'dashboard' ? '#3b82f6' : 'transparent',
+                  color: '#e5e5e5',
+                  border: currentPage === 'dashboard' ? 'none' : '1px solid #404040',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: currentPage === 'dashboard' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  if (currentPage !== 'dashboard') {
+                    e.currentTarget.style.backgroundColor = '#3a3a3a';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (currentPage !== 'dashboard') {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                🧠 Dashboard
+              </button>
+              <button
                 onClick={() => setCurrentPage('upload')}
                 style={{
                   padding: '8px 20px',
@@ -123,6 +150,7 @@ function App() {
             onNavigateToCourse={navigateToCourseDetail}
           />
         )}
+        {currentPage === 'dashboard' && <Dashboard />}
         {currentPage === 'upload' && (
           <SyllabusUpload onSuccessfulUpload={navigateToHome} />
         )}

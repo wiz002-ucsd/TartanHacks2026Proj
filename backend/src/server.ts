@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import syllabusRouter from './routes/syllabus';
 import coursesRouter from './routes/courses';
+import aiAdvisorRouter from './routes/ai-advisor';
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api', syllabusRouter);
 app.use('/api', coursesRouter);
+app.use('/api', aiAdvisorRouter);
 
 // 404 handler
 app.use((req, res) => {
