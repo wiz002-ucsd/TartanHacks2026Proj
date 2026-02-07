@@ -19,6 +19,14 @@ interface Event {
   weight: number | null;
 }
 
+interface Topic {
+  topic_id: number;
+  topic_name: string;
+  description: string | null;
+  mastery_score: number | null;
+  mastery_level: string | null;
+}
+
 interface CourseData {
   id: number;
   name: string;
@@ -50,6 +58,7 @@ interface CourseData {
 
 export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
   const [course, setCourse] = useState<CourseData | null>(null);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -57,6 +66,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
 
   useEffect(() => {
     fetchCourseDetails();
+    fetchTopics();
   }, [courseId]);
 
   const fetchCourseDetails = async () => {
@@ -77,6 +87,20 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
       setError(err instanceof Error ? err.message : 'Network error');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchTopics = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/courses/${courseId}/topics`);
+      const data = await res.json();
+
+      if (data.success) {
+        setTopics(data.topics || []);
+      }
+    } catch (err) {
+      console.error('Error fetching topics:', err);
+      // Don't set error state - topics are optional
     }
   };
 
@@ -628,7 +652,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
           )}
         </div>
 
-        {/* Course Policies */}
+        {/* Top Mastered Topics */}
         <div style={{
           padding: '28px',
           background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
@@ -647,30 +671,122 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
             fontWeight: '800',
             letterSpacing: '-0.5px',
           }}>
-            Course Policies
+            🎯 Topic Mastery
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <strong style={{ color: '#e5e5e5' }}>Late Days:</strong>
-              <p style={{ margin: '4px 0', fontSize: '14px', color: '#a3a3a3' }}>
-                {policies.late_days_total !== null ? `${policies.late_days_total} total` : 'Not specified'}
-                {policies.late_days_per_hw !== null && ` (${policies.late_days_per_hw} per assignment)`}
-              </p>
-            </div>
-            <div>
-              <strong style={{ color: '#e5e5e5' }}>Generative AI:</strong>
-              <p style={{ margin: '4px 0', fontSize: '14px' }}>
-                <span style={{ color: policies.genai_allowed ? '#10b981' : '#ef4444', fontWeight: 'bold' }}>
-                  {policies.genai_allowed !== null ? (policies.genai_allowed ? 'Allowed' : 'Not Allowed') : 'Not specified'}
-                </span>
-              </p>
-              {policies.genai_notes && (
-                <p style={{ margin: '4px 0', fontSize: '14px', color: '#a3a3a3' }}>
-                  {policies.genai_notes}
+          {(() => {
+            // Get topics with mastery scores
+            const masteredTopics = topics
+              .filter(t => t.mastery_score !== null && t.mastery_score > 0)
+              .sort((a, b) => (b.mastery_score || 0) - (a.mastery_score || 0))
+              .slice(0, 2);
+
+            // If no mastered topics, show first two topics or just first topic
+            const displayTopics = masteredTopics.length > 0
+              ? masteredTopics
+              : topics.slice(0, 1);
+
+            if (displayTopics.length === 0) {
+              return (
+                <p style={{ margin: 0, color: '#a3a3a3' }}>
+                  No topics available yet
                 </p>
-              )}
-            </div>
-          </div>
+              );
+            }
+
+            const getMasteryColor = (score: number | null) => {
+              if (!score) return '#737373';
+              if (score >= 0.9) return '#10b981'; // expert
+              if (score >= 0.75) return '#06b6d4'; // proficient
+              if (score >= 0.6) return '#f59e0b'; // developing
+              if (score >= 0.4) return '#f97316'; // emerging
+              return '#ef4444'; // foundational
+            };
+
+            const getMasteryLabel = (score: number | null) => {
+              if (!score) return 'Not started';
+              if (score >= 0.9) return 'Expert';
+              if (score >= 0.75) return 'Proficient';
+              if (score >= 0.6) return 'Developing';
+              if (score >= 0.4) return 'Emerging';
+              return 'Foundational';
+            };
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {displayTopics.map((topic) => (
+                  <div
+                    key={topic.topic_id}
+                    style={{
+                      padding: '16px',
+                      background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'start',
+                      marginBottom: '12px',
+                      gap: '12px',
+                    }}>
+                      <strong style={{
+                        color: '#e5e5e5',
+                        fontSize: '16px',
+                        flex: 1,
+                      }}>
+                        {topic.topic_name}
+                      </strong>
+                      {topic.mastery_score !== null && (
+                        <span style={{
+                          padding: '6px 14px',
+                          background: `linear-gradient(135deg, ${getMasteryColor(topic.mastery_score)} 0%, ${getMasteryColor(topic.mastery_score)}dd 100%)`,
+                          color: '#fff',
+                          borderRadius: '20px',
+                          fontSize: '13px',
+                          fontWeight: '700',
+                          boxShadow: `0 4px 12px ${getMasteryColor(topic.mastery_score)}40`,
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {Math.round(topic.mastery_score * 100)}%
+                        </span>
+                      )}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}>
+                      <div style={{
+                        flex: 1,
+                        height: '8px',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          width: `${(topic.mastery_score || 0) * 100}%`,
+                          height: '100%',
+                          background: `linear-gradient(90deg, ${getMasteryColor(topic.mastery_score)} 0%, ${getMasteryColor(topic.mastery_score)}dd 100%)`,
+                          borderRadius: '4px',
+                          transition: 'width 0.5s ease',
+                        }} />
+                      </div>
+                      <span style={{
+                        fontSize: '13px',
+                        color: getMasteryColor(topic.mastery_score),
+                        fontWeight: '600',
+                        minWidth: '90px',
+                        textAlign: 'right',
+                      }}>
+                        {getMasteryLabel(topic.mastery_score)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </div>
 

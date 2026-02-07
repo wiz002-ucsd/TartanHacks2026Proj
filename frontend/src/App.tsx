@@ -131,7 +131,7 @@ function App() {
                   }
                 }}
               >
-                AI View
+                AI Dashboard
               </button>
               <button
                 onClick={() => setCurrentPage('upload')}

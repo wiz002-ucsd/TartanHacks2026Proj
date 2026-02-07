@@ -78,6 +78,7 @@ EXTRACTION GUIDELINES:
 - For each lecture, extract: number, title, date, topics covered, description
 - "topics" should be an array of key topics/concepts covered in that lecture
 - If lecture schedule is not detailed, return empty array
+- If due data is not specified, use date 14 weeks from current date
 
 Return the JSON object immediately.`;
 /**

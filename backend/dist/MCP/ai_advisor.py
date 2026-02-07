@@ -117,7 +117,7 @@ Be student-friendly but professional. Return ONLY valid JSON, no other text."""
         # Format snapshot for readability
         snapshot_json = json.dumps(snapshot, indent=2, default=str)
 
-        prompt = f"""Given this student's academic snapshot, generate a comprehensive analysis.
+        prompt = f"""Given this student's academic snapshot, generate a comprehensive analysis. When refering to the student use second-person, i.e. "You have a high workload..."
 
 STUDENT ACADEMIC SNAPSHOT:
 {snapshot_json}

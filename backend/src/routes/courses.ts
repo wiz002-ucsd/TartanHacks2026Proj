@@ -118,6 +118,80 @@ router.get('/courses/:id', async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/courses/:id/topics
+ *
+ * Retrieves all topics for a course with their mastery data
+ *
+ * Response:
+ * {
+ *   "success": true,
+ *   "topics": [
+ *     {
+ *       "id": 1,
+ *       "name": "Linear Regression",
+ *       "description": "...",
+ *       "mastery_score": 0.85,
+ *       "mastery_level": "proficient"
+ *     }
+ *   ]
+ * }
+ */
+router.get('/courses/:id/topics', async (req: Request, res: Response) => {
+  try {
+    const courseId = parseInt(req.params.id, 10);
+
+    if (isNaN(courseId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid course ID',
+      });
+    }
+
+    console.log(`📚 Fetching topics with mastery for course ID: ${courseId}`);
+
+    // Import supabase client
+    const { supabase } = await import('../services/database');
+
+    // Query topics with mastery data using the view
+    const { data: topics, error } = await supabase
+      .from('topics_with_mastery')
+      .select('*')
+      .eq('course_id', courseId)
+      .order('mastery_score', { ascending: false, nullsFirst: false });
+
+    if (error) {
+      console.error('❌ Error fetching topics:', error);
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    console.log(`✓ Retrieved ${topics?.length || 0} topics`);
+
+    return res.status(200).json({
+      success: true,
+      topics: topics || [],
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching topics:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: 'An unexpected error occurred',
+    });
+  }
+});
+
+/**
  * DELETE /api/courses/:id
  *
  * Deletes a course and all related data (CASCADE)

@@ -35,22 +35,28 @@ router.get('/ai-advisor', async (req, res) => {
         });
         pythonProcess.on('close', (code) => {
             if (code !== 0) {
-                console.error('❌ AI advisor script failed:', errorData);
+                console.error('❌ AI advisor script failed with code:', code);
+                console.error('Error output:', errorData);
+                console.error('Script path:', scriptPath);
                 // Return mock data as fallback
                 const fallbackData = generateMockAdvisorData();
+                fallbackData.error = `Python script failed: ${errorData}`;
                 return res.json(fallbackData);
             }
             // Parse the JSON output from Python script
             try {
                 const jsonData = JSON.parse(outputData);
                 console.log('✅ AI advisor report generated successfully from database');
+                console.log('Courses found:', jsonData.snapshot?.student_overview?.active_courses);
                 res.json(jsonData);
             }
             catch (parseError) {
                 console.error('❌ Failed to parse AI advisor output:', parseError);
-                console.error('Raw output:', outputData);
+                console.error('Raw output length:', outputData.length);
+                console.error('First 500 chars:', outputData.substring(0, 500));
                 // Return mock data as fallback
                 const fallbackData = generateMockAdvisorData();
+                fallbackData.error = `Parse error: ${parseError}`;
                 res.json(fallbackData);
             }
         });

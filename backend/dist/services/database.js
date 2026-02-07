@@ -151,7 +151,17 @@ async function getCourseData(courseId) {
     if (courseError) {
         throw new Error(`Failed to fetch course: ${courseError.message}`);
     }
-    return course;
+    // Transform array fields to single objects since there's only one per course
+    const transformedCourse = {
+        ...course,
+        grading_policies: Array.isArray(course.grading_policies) && course.grading_policies.length > 0
+            ? course.grading_policies[0]
+            : null,
+        course_policies: Array.isArray(course.course_policies) && course.course_policies.length > 0
+            ? course.course_policies[0]
+            : null,
+    };
+    return transformedCourse;
 }
 /**
  * Retrieves all courses with their next upcoming deadline

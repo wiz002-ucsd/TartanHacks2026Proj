@@ -42,7 +42,7 @@ router.get('/ai-advisor', async (req, res) => {
         console.error('Error output:', errorData);
         console.error('Script path:', scriptPath);
         // Return mock data as fallback
-        const fallbackData = generateMockAdvisorData();
+        const fallbackData: any = generateMockAdvisorData();
         fallbackData.error = `Python script failed: ${errorData}`;
         return res.json(fallbackData);
       }
@@ -58,7 +58,7 @@ router.get('/ai-advisor', async (req, res) => {
         console.error('Raw output length:', outputData.length);
         console.error('First 500 chars:', outputData.substring(0, 500));
         // Return mock data as fallback
-        const fallbackData = generateMockAdvisorData();
+        const fallbackData: any = generateMockAdvisorData();
         fallbackData.error = `Parse error: ${parseError}`;
         res.json(fallbackData);
       }
