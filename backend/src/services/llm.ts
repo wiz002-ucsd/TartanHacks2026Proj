@@ -47,7 +47,16 @@ SCHEMA:
     "late_days_per_hw": "number | null",
     "genai_allowed": "boolean | null",
     "genai_notes": "string | null"
-  }
+  },
+  "lectures": [
+    {
+      "lecture_number": "number",
+      "title": "string",
+      "date": "YYYY-MM-DD | null",
+      "topics": ["string"],
+      "description": "string | null"
+    }
+  ]
 }
 
 EXTRACTION GUIDELINES:
@@ -62,6 +71,10 @@ EXTRACTION GUIDELINES:
 - For "genai_allowed", look for keywords like "ChatGPT", "AI tools", "generative AI"
 - For "late_days_total", look for phrases like "X late days for the semester"
 - For "late_days_per_hw", look for "Y late days per assignment"
+- Extract lecture schedule/calendar if available in syllabus
+- For each lecture, extract: number, title, date, topics covered, description
+- "topics" should be an array of key topics/concepts covered in that lecture
+- If lecture schedule is not detailed, return empty array
 
 Return the JSON object immediately.`;
 

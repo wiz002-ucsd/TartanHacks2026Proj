@@ -36,6 +36,13 @@ export interface SyllabusData {
   grading: Grading;
   events: Event[];
   policies: Policies;
+  lectures: Array<{
+    lecture_number: number;
+    title: string;
+    date: string | null;
+    topics: string[];
+    description: string | null;
+  }>;
 }
 
 // Database types (with IDs after insertion)

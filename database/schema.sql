@@ -2,6 +2,7 @@
 -- Run this in your Supabase SQL Editor
 
 -- Drop tables if they exist (for development)
+DROP TABLE IF EXISTS lectures CASCADE;
 DROP TABLE IF EXISTS course_policies CASCADE;
 DROP TABLE IF EXISTS grading_policies CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
@@ -40,6 +41,18 @@ CREATE TABLE events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Lectures table (1-to-many with courses)
+CREATE TABLE lectures (
+  id BIGSERIAL PRIMARY KEY,
+  course_id BIGINT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  lecture_number INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  date DATE,
+  topics TEXT[], -- Array of topics covered
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Course policies table (1-to-1 with courses)
 CREATE TABLE course_policies (
   id BIGSERIAL PRIMARY KEY,
@@ -54,6 +67,8 @@ CREATE TABLE course_policies (
 -- Indexes for performance
 CREATE INDEX idx_events_course_id ON events(course_id);
 CREATE INDEX idx_events_due_date ON events(due_date);
+CREATE INDEX idx_lectures_course_id ON lectures(course_id);
+CREATE INDEX idx_lectures_date ON lectures(date);
 CREATE INDEX idx_grading_policies_course_id ON grading_policies(course_id);
 CREATE INDEX idx_course_policies_course_id ON course_policies(course_id);
 
@@ -61,10 +76,12 @@ CREATE INDEX idx_course_policies_course_id ON course_policies(course_id);
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grading_policies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lectures ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_policies ENABLE ROW LEVEL SECURITY;
 
 -- For development: allow all operations (replace with proper auth later)
 CREATE POLICY "Allow all operations on courses" ON courses FOR ALL USING (true);
 CREATE POLICY "Allow all operations on grading_policies" ON grading_policies FOR ALL USING (true);
 CREATE POLICY "Allow all operations on events" ON events FOR ALL USING (true);
+CREATE POLICY "Allow all operations on lectures" ON lectures FOR ALL USING (true);
 CREATE POLICY "Allow all operations on course_policies" ON course_policies FOR ALL USING (true);

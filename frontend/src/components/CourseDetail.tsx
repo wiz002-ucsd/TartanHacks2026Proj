@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmDialog from './ConfirmDialog';
+import LectureRoadmap from './LectureRoadmap';
 
 // Backend API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
@@ -31,6 +32,14 @@ interface CourseData {
     quizzes: number | null;
   } | null;
   events: Event[];
+  lectures: Array<{
+    id: number;
+    lecture_number: number;
+    title: string;
+    date: string | null;
+    topics: string[];
+    description: string | null;
+  }>;
   course_policies: {
     late_days_total: number | null;
     late_days_per_hw: number | null;
@@ -193,9 +202,39 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
     );
   }
 
-  const grading = course.grading_policies || {};
-  const policies = course.course_policies || {};
+  const grading = course.grading_policies ?? {
+    homework: null,
+    tests: null,
+    project: null,
+    quizzes: null,
+  };
+  const policies = course.course_policies ?? {
+    late_days_total: null,
+    late_days_per_hw: null,
+    genai_allowed: null,
+    genai_notes: null,
+  };
   const upcomingEvents = getUpcomingEvents();
+  const gradingItems = [
+    { label: 'Homework', value: grading.homework, color: '#3b82f6' },
+    { label: 'Tests', value: grading.tests, color: '#ef4444' },
+    { label: 'Project', value: grading.project, color: '#f59e0b' },
+    { label: 'Quizzes', value: grading.quizzes, color: '#06b6d4' },
+  ].filter((item): item is { label: string; value: number; color: string } => item.value !== null && item.value > 0);
+  const gradingTotal = gradingItems.reduce((sum, item) => sum + item.value, 0);
+
+  const gradingPieBackground = (() => {
+    if (gradingTotal <= 0) return '#1a1a1a';
+
+    let currentPercent = 0;
+    const slices = gradingItems.map((item) => {
+      const start = currentPercent;
+      currentPercent += (item.value / gradingTotal) * 100;
+      return `${item.color} ${start.toFixed(2)}% ${currentPercent.toFixed(2)}%`;
+    });
+
+    return `conic-gradient(${slices.join(', ')})`;
+  })();
 
   return (
     <div style={{ width: '100%', padding: '30px 40px', boxSizing: 'border-box', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
@@ -352,52 +391,52 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
           <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #10b981', paddingBottom: '8px', color: '#e5e5e5' }}>
             Grading Breakdown
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {grading.homework !== null && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: '500', color: '#e5e5e5' }}>Homework</span>
-                  <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>{formatPercent(grading.homework)}</span>
-                </div>
-                <div style={{ height: '8px', backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${grading.homework}%`, height: '100%', backgroundColor: '#3b82f6' }} />
-                </div>
+          {gradingItems.length > 0 ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center' }}>
+              <div
+                style={{
+                  width: '180px',
+                  height: '180px',
+                  borderRadius: '50%',
+                  background: gradingPieBackground,
+                  border: '6px solid #1a1a1a',
+                  flexShrink: 0,
+                }}
+              />
+
+              <div style={{ flex: 1, minWidth: '180px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {gradingItems.map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '8px 10px',
+                      backgroundColor: '#1a1a1a',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          backgroundColor: item.color,
+                          display: 'inline-block',
+                        }}
+                      />
+                      <span style={{ color: '#e5e5e5', fontWeight: '500' }}>{item.label}</span>
+                    </div>
+                    <span style={{ color: item.color, fontWeight: 'bold' }}>{formatPercent(item.value)}</span>
+                  </div>
+                ))}
               </div>
-            )}
-            {grading.tests !== null && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: '500', color: '#e5e5e5' }}>Tests</span>
-                  <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{formatPercent(grading.tests)}</span>
-                </div>
-                <div style={{ height: '8px', backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${grading.tests}%`, height: '100%', backgroundColor: '#ef4444' }} />
-                </div>
-              </div>
-            )}
-            {grading.project !== null && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: '500', color: '#e5e5e5' }}>Project</span>
-                  <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{formatPercent(grading.project)}</span>
-                </div>
-                <div style={{ height: '8px', backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${grading.project}%`, height: '100%', backgroundColor: '#f59e0b' }} />
-                </div>
-              </div>
-            )}
-            {grading.quizzes !== null && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: '500', color: '#e5e5e5' }}>Quizzes</span>
-                  <span style={{ fontWeight: 'bold', color: '#06b6d4' }}>{formatPercent(grading.quizzes)}</span>
-                </div>
-                <div style={{ height: '8px', backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${grading.quizzes}%`, height: '100%', backgroundColor: '#06b6d4' }} />
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <p style={{ margin: 0, color: '#a3a3a3' }}>No grading breakdown available</p>
+          )}
         </div>
 
         {/* Course Policies */}
@@ -434,6 +473,22 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* Lecture Roadmap */}
+      {course.lectures && course.lectures.length > 0 && (
+        <div style={{
+          marginTop: '30px',
+          padding: '20px',
+          backgroundColor: '#2d2d2d',
+          border: '1px solid #404040',
+          borderRadius: '12px',
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #3b82f6', paddingBottom: '8px', color: '#e5e5e5' }}>
+            Lecture Schedule ({course.lectures.length} lectures)
+          </h3>
+          <LectureRoadmap lectures={course.lectures} />
+        </div>
+      )}
 
       {/* All Events */}
       {course.events.length > 0 && (

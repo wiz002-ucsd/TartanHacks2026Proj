@@ -33,11 +33,20 @@ export const PoliciesSchema = z.object({
   genai_notes: z.string().nullable(),
 });
 
+export const LectureSchema = z.object({
+  lecture_number: z.number(),
+  title: z.string(),
+  date: z.string().nullable(), // YYYY-MM-DD or null
+  topics: z.array(z.string()),
+  description: z.string().nullable(),
+});
+
 export const SyllabusDataSchema = z.object({
   course: CourseSchema,
   grading: GradingSchema,
   events: z.array(EventSchema),
   policies: PoliciesSchema,
+  lectures: z.array(LectureSchema),
 });
 
 // Type inference from Zod schema

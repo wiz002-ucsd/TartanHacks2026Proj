@@ -92,7 +92,32 @@ export async function storeSyllabusData(
       console.log('No events to insert');
     }
 
-    // Step 4: Insert course policies
+    // Step 4: Insert lectures (if any exist)
+    if (data.lectures.length > 0) {
+      const lecturesToInsert = data.lectures.map((lecture) => ({
+        course_id: courseId,
+        lecture_number: lecture.lecture_number,
+        title: lecture.title,
+        date: lecture.date,
+        topics: lecture.topics,
+        description: lecture.description,
+      }));
+
+      const { error: lecturesError } = await supabase
+        .from('lectures')
+        .insert(lecturesToInsert);
+
+      if (lecturesError) {
+        console.error('Failed to insert lectures:', lecturesError);
+        throw new Error(`Database error: ${lecturesError.message}`);
+      }
+
+      console.log(`✓ Inserted ${data.lectures.length} lectures`);
+    } else {
+      console.log('No lectures to insert');
+    }
+
+    // Step 5: Insert course policies
     const { error: policiesError } = await supabase
       .from('course_policies')
       .insert({
@@ -135,6 +160,7 @@ export async function getCourseData(courseId: number) {
       *,
       grading_policies(*),
       events(*),
+      lectures(*),
       course_policies(*)
     `)
     .eq('id', courseId)
