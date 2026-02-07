@@ -1,28 +1,43 @@
 import { useState } from 'react';
 import Home from './components/Home';
 import SyllabusUpload from './components/SyllabusUpload';
+import CourseDetail from './components/CourseDetail';
 
-type Page = 'home' | 'upload';
+type Page = 'home' | 'upload' | 'detail';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+  const [homeRefreshKey, setHomeRefreshKey] = useState(0);
+
+  const navigateToCourseDetail = (courseId: number) => {
+    setSelectedCourseId(courseId);
+    setCurrentPage('detail');
+  };
+
+  const navigateToHome = (shouldRefresh = false) => {
+    setCurrentPage('home');
+    setSelectedCourseId(null);
+    if (shouldRefresh) {
+      setHomeRefreshKey(prev => prev + 1);
+    }
+  };
 
   return (
     <div className="App">
       {/* Navigation Bar */}
       <nav
         style={{
-          backgroundColor: '#343a40',
+          backgroundColor: '#1a1a1a',
           padding: '15px 0',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
           marginBottom: '0',
         }}
       >
         <div
           style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '0 20px',
+            width: '100%',
+            padding: '0 40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -32,7 +47,7 @@ function App() {
             <h1
               style={{
                 margin: 0,
-                color: 'white',
+                color: '#e5e5e5',
                 fontSize: '24px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
@@ -46,9 +61,9 @@ function App() {
                 onClick={() => setCurrentPage('home')}
                 style={{
                   padding: '8px 20px',
-                  backgroundColor: currentPage === 'home' ? '#007bff' : 'transparent',
-                  color: 'white',
-                  border: currentPage === 'home' ? 'none' : '1px solid #6c757d',
+                  backgroundColor: currentPage === 'home' ? '#3b82f6' : 'transparent',
+                  color: '#e5e5e5',
+                  border: currentPage === 'home' ? 'none' : '1px solid #404040',
                   borderRadius: '6px',
                   fontSize: '14px',
                   fontWeight: currentPage === 'home' ? 'bold' : 'normal',
@@ -57,7 +72,7 @@ function App() {
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'home') {
-                    e.currentTarget.style.backgroundColor = '#495057';
+                    e.currentTarget.style.backgroundColor = '#3a3a3a';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -72,9 +87,9 @@ function App() {
                 onClick={() => setCurrentPage('upload')}
                 style={{
                   padding: '8px 20px',
-                  backgroundColor: currentPage === 'upload' ? '#007bff' : 'transparent',
-                  color: 'white',
-                  border: currentPage === 'upload' ? 'none' : '1px solid #6c757d',
+                  backgroundColor: currentPage === 'upload' ? '#3b82f6' : 'transparent',
+                  color: '#e5e5e5',
+                  border: currentPage === 'upload' ? 'none' : '1px solid #404040',
                   borderRadius: '6px',
                   fontSize: '14px',
                   fontWeight: currentPage === 'upload' ? 'bold' : 'normal',
@@ -83,7 +98,7 @@ function App() {
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'upload') {
-                    e.currentTarget.style.backgroundColor = '#495057';
+                    e.currentTarget.style.backgroundColor = '#3a3a3a';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -100,12 +115,22 @@ function App() {
       </nav>
 
       {/* Page Content */}
-      <div style={{ minHeight: 'calc(100vh - 70px)', backgroundColor: '#f8f9fa', paddingTop: '20px' }}>
+      <div style={{ minHeight: 'calc(100vh - 70px)', backgroundColor: '#0a0a0a' }}>
         {currentPage === 'home' && (
-          <Home onNavigateToUpload={() => setCurrentPage('upload')} />
+          <Home
+            key={homeRefreshKey}
+            onNavigateToUpload={() => setCurrentPage('upload')}
+            onNavigateToCourse={navigateToCourseDetail}
+          />
         )}
         {currentPage === 'upload' && (
-          <SyllabusUpload onSuccessfulUpload={() => setCurrentPage('home')} />
+          <SyllabusUpload onSuccessfulUpload={navigateToHome} />
+        )}
+        {currentPage === 'detail' && selectedCourseId !== null && (
+          <CourseDetail
+            courseId={selectedCourseId}
+            onBack={navigateToHome}
+          />
         )}
       </div>
     </div>

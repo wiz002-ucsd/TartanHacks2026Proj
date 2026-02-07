@@ -47,17 +47,17 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
       <div
         style={{
           padding: '20px',
-          border: '2px solid #28a745',
+          border: '2px solid #10b981',
           borderRadius: '8px',
-          backgroundColor: '#d4edda',
+          backgroundColor: '#065f46',
           marginBottom: '20px',
         }}
       >
-        <h2 style={{ margin: '0 0 10px 0', color: '#155724' }}>
+        <h2 style={{ margin: '0 0 10px 0', color: '#e5e5e5' }}>
           Syllabus Analyzed Successfully
         </h2>
-        <p style={{ margin: '0', color: '#155724' }}>{message}</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#155724' }}>
+        <p style={{ margin: '0', color: '#e5e5e5' }}>{message}</p>
+        <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#e5e5e5' }}>
           <strong>Database ID:</strong> {courseId}
         </p>
       </div>
@@ -66,31 +66,31 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
       <div
         style={{
           padding: '20px',
-          border: '1px solid #dee2e6',
+          border: '1px solid #404040',
           borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
+          backgroundColor: '#2d2d2d',
           marginBottom: '20px',
         }}
       >
-        <h3 style={{ marginTop: 0, color: '#343a40', borderBottom: '2px solid #007bff', paddingBottom: '8px' }}>
+        <h3 style={{ marginTop: 0, color: '#e5e5e5', borderBottom: '2px solid #3b82f6', paddingBottom: '8px' }}>
           Course Information
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
           <div>
-            <strong>Course Name:</strong>
-            <p style={{ margin: '5px 0', fontSize: '16px' }}>{course.name}</p>
+            <strong style={{ color: '#e5e5e5' }}>Course Name:</strong>
+            <p style={{ margin: '5px 0', fontSize: '16px', color: '#e5e5e5' }}>{course.name}</p>
           </div>
           <div>
-            <strong>Course Code:</strong>
-            <p style={{ margin: '5px 0', fontSize: '16px' }}>{course.code}</p>
+            <strong style={{ color: '#e5e5e5' }}>Course Code:</strong>
+            <p style={{ margin: '5px 0', fontSize: '16px', color: '#e5e5e5' }}>{course.code}</p>
           </div>
           <div>
-            <strong>Term:</strong>
-            <p style={{ margin: '5px 0', fontSize: '16px' }}>{course.term}</p>
+            <strong style={{ color: '#e5e5e5' }}>Term:</strong>
+            <p style={{ margin: '5px 0', fontSize: '16px', color: '#e5e5e5' }}>{course.term}</p>
           </div>
           <div>
-            <strong>Units:</strong>
-            <p style={{ margin: '5px 0', fontSize: '16px' }}>{course.units ?? 'Not specified'}</p>
+            <strong style={{ color: '#e5e5e5' }}>Units:</strong>
+            <p style={{ margin: '5px 0', fontSize: '16px', color: '#e5e5e5' }}>{course.units ?? 'Not specified'}</p>
           </div>
         </div>
       </div>
@@ -99,25 +99,25 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
       <div
         style={{
           padding: '20px',
-          border: '1px solid #dee2e6',
+          border: '1px solid #404040',
           borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
+          backgroundColor: '#2d2d2d',
           marginBottom: '20px',
         }}
       >
-        <h3 style={{ marginTop: 0, color: '#343a40', borderBottom: '2px solid #28a745', paddingBottom: '8px' }}>
+        <h3 style={{ marginTop: 0, color: '#e5e5e5', borderBottom: '2px solid #10b981', paddingBottom: '8px' }}>
           Grading Breakdown
         </h3>
         <div style={{ marginTop: '15px' }}>
           {grading.homework !== null && (
             <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-              <strong style={{ width: '150px' }}>Homework:</strong>
-              <div style={{ flex: 1, backgroundColor: '#e9ecef', borderRadius: '4px', overflow: 'hidden' }}>
+              <strong style={{ width: '150px', color: '#e5e5e5' }}>Homework:</strong>
+              <div style={{ flex: 1, backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
                 <div
                   style={{
                     width: `${grading.homework}%`,
-                    backgroundColor: '#007bff',
-                    color: 'white',
+                    backgroundColor: '#3b82f6',
+                    color: '#e5e5e5',
                     padding: '5px 10px',
                     borderRadius: '4px',
                     textAlign: 'center',
@@ -131,13 +131,13 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
           )}
           {grading.tests !== null && (
             <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-              <strong style={{ width: '150px' }}>Tests:</strong>
-              <div style={{ flex: 1, backgroundColor: '#e9ecef', borderRadius: '4px', overflow: 'hidden' }}>
+              <strong style={{ width: '150px', color: '#e5e5e5' }}>Tests:</strong>
+              <div style={{ flex: 1, backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
                 <div
                   style={{
                     width: `${grading.tests}%`,
-                    backgroundColor: '#dc3545',
-                    color: 'white',
+                    backgroundColor: '#ef4444',
+                    color: '#e5e5e5',
                     padding: '5px 10px',
                     borderRadius: '4px',
                     textAlign: 'center',
@@ -151,13 +151,13 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
           )}
           {grading.project !== null && (
             <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-              <strong style={{ width: '150px' }}>Project:</strong>
-              <div style={{ flex: 1, backgroundColor: '#e9ecef', borderRadius: '4px', overflow: 'hidden' }}>
+              <strong style={{ width: '150px', color: '#e5e5e5' }}>Project:</strong>
+              <div style={{ flex: 1, backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
                 <div
                   style={{
                     width: `${grading.project}%`,
-                    backgroundColor: '#ffc107',
-                    color: 'black',
+                    backgroundColor: '#f59e0b',
+                    color: '#0a0a0a',
                     padding: '5px 10px',
                     borderRadius: '4px',
                     textAlign: 'center',
@@ -171,13 +171,13 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
           )}
           {grading.quizzes !== null && (
             <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-              <strong style={{ width: '150px' }}>Quizzes:</strong>
-              <div style={{ flex: 1, backgroundColor: '#e9ecef', borderRadius: '4px', overflow: 'hidden' }}>
+              <strong style={{ width: '150px', color: '#e5e5e5' }}>Quizzes:</strong>
+              <div style={{ flex: 1, backgroundColor: '#1a1a1a', borderRadius: '4px', overflow: 'hidden' }}>
                 <div
                   style={{
                     width: `${grading.quizzes}%`,
-                    backgroundColor: '#17a2b8',
-                    color: 'white',
+                    backgroundColor: '#06b6d4',
+                    color: '#e5e5e5',
                     padding: '5px 10px',
                     borderRadius: '4px',
                     textAlign: 'center',
@@ -190,7 +190,7 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
             </div>
           )}
           {totalGrading > 0 && (
-            <p style={{ marginTop: '15px', fontSize: '14px', color: '#6c757d' }}>
+            <p style={{ marginTop: '15px', fontSize: '14px', color: '#a3a3a3' }}>
               <strong>Total:</strong> {totalGrading}%
             </p>
           )}
@@ -202,38 +202,38 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
         <div
           style={{
             padding: '20px',
-            border: '1px solid #dee2e6',
+            border: '1px solid #404040',
             borderRadius: '8px',
-            backgroundColor: '#f8f9fa',
+            backgroundColor: '#2d2d2d',
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ marginTop: 0, color: '#343a40', borderBottom: '2px solid #ffc107', paddingBottom: '8px' }}>
+          <h3 style={{ marginTop: 0, color: '#e5e5e5', borderBottom: '2px solid #f59e0b', paddingBottom: '8px' }}>
             Course Events ({events.length})
           </h3>
 
           {Object.entries(groupedEvents).map(([type, eventList]) => (
             <div key={type} style={{ marginTop: '20px' }}>
-              <h4 style={{ textTransform: 'capitalize', color: '#495057', marginBottom: '10px' }}>
+              <h4 style={{ textTransform: 'capitalize', color: '#a3a3a3', marginBottom: '10px' }}>
                 {type}s ({eventList.length})
               </h4>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#e9ecef' }}>
-                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #dee2e6' }}>Name</th>
-                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #dee2e6' }}>Release Date</th>
-                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #dee2e6' }}>Due Date</th>
-                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #dee2e6' }}>Weight</th>
+                    <tr style={{ backgroundColor: '#1a1a1a' }}>
+                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Name</th>
+                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Release Date</th>
+                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Due Date</th>
+                      <th style={{ padding: '8px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Weight</th>
                     </tr>
                   </thead>
                   <tbody>
                     {eventList.map((event, idx) => (
-                      <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? 'white' : '#f8f9fa' }}>
-                        <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{event.name}</td>
-                        <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{formatDate(event.release_date)}</td>
-                        <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{formatDate(event.due_date)}</td>
-                        <td style={{ padding: '8px', border: '1px solid #dee2e6' }}>{formatPercent(event.weight)}</td>
+                      <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#2d2d2d' : '#1a1a1a' }}>
+                        <td style={{ padding: '8px', border: '1px solid #404040', color: '#e5e5e5' }}>{event.name}</td>
+                        <td style={{ padding: '8px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatDate(event.release_date)}</td>
+                        <td style={{ padding: '8px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatDate(event.due_date)}</td>
+                        <td style={{ padding: '8px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatPercent(event.weight)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -248,18 +248,18 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
       <div
         style={{
           padding: '20px',
-          border: '1px solid #dee2e6',
+          border: '1px solid #404040',
           borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
+          backgroundColor: '#2d2d2d',
         }}
       >
-        <h3 style={{ marginTop: 0, color: '#343a40', borderBottom: '2px solid #6f42c1', paddingBottom: '8px' }}>
+        <h3 style={{ marginTop: 0, color: '#e5e5e5', borderBottom: '2px solid #8b5cf6', paddingBottom: '8px' }}>
           Course Policies
         </h3>
         <div style={{ marginTop: '15px' }}>
           <div style={{ marginBottom: '15px' }}>
-            <strong>Late Days Policy:</strong>
-            <p style={{ margin: '5px 0', fontSize: '14px' }}>
+            <strong style={{ color: '#e5e5e5' }}>Late Days Policy:</strong>
+            <p style={{ margin: '5px 0', fontSize: '14px', color: '#a3a3a3' }}>
               {policies.late_days_total !== null && (
                 <span>Total late days: <strong>{policies.late_days_total}</strong></span>
               )}
@@ -271,15 +271,15 @@ export default function SyllabusSummary({ data, courseId, message }: SyllabusSum
             </p>
           </div>
           <div>
-            <strong>Generative AI Policy:</strong>
-            <p style={{ margin: '5px 0', fontSize: '14px' }}>
+            <strong style={{ color: '#e5e5e5' }}>Generative AI Policy:</strong>
+            <p style={{ margin: '5px 0', fontSize: '14px', color: '#a3a3a3' }}>
               {policies.genai_allowed !== null ? (
                 <span>
-                  <strong style={{ color: policies.genai_allowed ? '#28a745' : '#dc3545' }}>
+                  <strong style={{ color: policies.genai_allowed ? '#10b981' : '#ef4444' }}>
                     {policies.genai_allowed ? 'Allowed' : 'Not Allowed'}
                   </strong>
                   {policies.genai_notes && (
-                    <span style={{ marginLeft: '10px', color: '#6c757d' }}>
+                    <span style={{ marginLeft: '10px', color: '#a3a3a3' }}>
                       - {policies.genai_notes}
                     </span>
                   )}

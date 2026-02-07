@@ -99,9 +99,9 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
   };
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
-      <h1>Syllabus Upload & Analysis</h1>
-      <p>Upload a syllabus PDF or paste text to extract structured course information</p>
+    <div style={{ width: '100%', padding: '30px 40px', maxWidth: '1400px', margin: '0 auto', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
+      <h1 style={{ color: '#e5e5e5' }}>Syllabus Upload & Analysis</h1>
+      <p style={{ color: '#a3a3a3' }}>Upload a syllabus PDF or paste text to extract structured course information</p>
 
       {/* Mode Toggle */}
       <div style={{ marginTop: '20px', marginBottom: '20px' }}>
@@ -110,9 +110,9 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
           style={{
             padding: '10px 20px',
             marginRight: '10px',
-            backgroundColor: uploadMode === 'file' ? '#007bff' : '#f0f0f0',
-            color: uploadMode === 'file' ? 'white' : 'black',
-            border: '1px solid #ccc',
+            backgroundColor: uploadMode === 'file' ? '#3b82f6' : '#2d2d2d',
+            color: '#e5e5e5',
+            border: '1px solid #404040',
             borderRadius: '4px',
             cursor: 'pointer',
             fontWeight: uploadMode === 'file' ? 'bold' : 'normal',
@@ -124,9 +124,9 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
           onClick={() => setUploadMode('text')}
           style={{
             padding: '10px 20px',
-            backgroundColor: uploadMode === 'text' ? '#007bff' : '#f0f0f0',
-            color: uploadMode === 'text' ? 'white' : 'black',
-            border: '1px solid #ccc',
+            backgroundColor: uploadMode === 'text' ? '#3b82f6' : '#2d2d2d',
+            color: '#e5e5e5',
+            border: '1px solid #404040',
             borderRadius: '4px',
             cursor: 'pointer',
             fontWeight: uploadMode === 'text' ? 'bold' : 'normal',
@@ -140,7 +140,7 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
         {/* File Upload Mode */}
         {uploadMode === 'file' && (
           <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="file-upload" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+            <label htmlFor="file-upload" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#e5e5e5' }}>
               Upload Syllabus File (PDF or TXT)
             </label>
             <input
@@ -151,13 +151,15 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
               disabled={isLoading}
               style={{
                 padding: '8px',
-                border: '1px solid #ccc',
+                border: '1px solid #404040',
                 borderRadius: '4px',
                 width: '100%',
+                backgroundColor: '#1a1a1a',
+                color: '#e5e5e5',
               }}
             />
             {selectedFile && (
-              <p style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+              <p style={{ marginTop: '8px', fontSize: '14px', color: '#a3a3a3' }}>
                 Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
               </p>
             )}
@@ -167,7 +169,7 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
         {/* Text Paste Mode */}
         {uploadMode === 'text' && (
           <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="syllabus-text" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+            <label htmlFor="syllabus-text" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#e5e5e5' }}>
               Paste Syllabus Text
             </label>
             <textarea
@@ -180,11 +182,13 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
               style={{
                 width: '100%',
                 padding: '12px',
-                border: '1px solid #ccc',
+                border: '1px solid #404040',
                 borderRadius: '4px',
                 fontFamily: 'monospace',
                 fontSize: '14px',
                 resize: 'vertical',
+                backgroundColor: '#1a1a1a',
+                color: '#e5e5e5',
               }}
             />
           </div>
@@ -196,8 +200,8 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
           disabled={isLoading || (uploadMode === 'file' ? !selectedFile : !syllabusText.trim())}
           style={{
             padding: '12px 24px',
-            backgroundColor: isLoading ? '#ccc' : '#28a745',
-            color: 'white',
+            backgroundColor: isLoading ? '#404040' : '#10b981',
+            color: '#e5e5e5',
             border: 'none',
             borderRadius: '4px',
             fontSize: '16px',
@@ -215,17 +219,17 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
           style={{
             marginTop: '30px',
             padding: '20px',
-            border: '2px solid #dc3545',
+            border: '2px solid #ef4444',
             borderRadius: '8px',
-            backgroundColor: '#f8d7da',
+            backgroundColor: '#7f1d1d',
           }}
         >
-          <h2 style={{ margin: '0 0 10px 0', color: '#721c24' }}>
+          <h2 style={{ margin: '0 0 10px 0', color: '#e5e5e5' }}>
             Error
           </h2>
-          <p style={{ color: '#721c24' }}><strong>Error:</strong> {response.error}</p>
+          <p style={{ color: '#e5e5e5' }}><strong>Error:</strong> {response.error}</p>
           {response.details && (
-            <pre style={{ marginTop: '10px', fontSize: '12px', overflow: 'auto', color: '#721c24' }}>
+            <pre style={{ marginTop: '10px', fontSize: '12px', overflow: 'auto', color: '#e5e5e5' }}>
               {response.details}
             </pre>
           )}

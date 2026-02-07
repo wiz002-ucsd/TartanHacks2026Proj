@@ -51,8 +51,14 @@ SCHEMA:
 }
 
 EXTRACTION GUIDELINES:
+- "grading" percentages are CATEGORY-LEVEL weights (e.g., "Homework: 40%" means all homework combined)
 - "grading" percentages should sum to 100 (or close to it)
 - Extract all assignments, exams, projects, and quizzes as "events"
+- For each "event", the "weight" field is the INDIVIDUAL weight as a percentage of final grade
+  * If syllabus says "Assignment 1: 5%", use weight: 5
+  * If syllabus says "Midterm 1: 20%", use weight: 20
+  * If individual weights aren't specified, calculate the weight of each event by dividing the category-level weight by the number of assignments of that category
+  * DO NOT use the category weight for individual events
 - For "genai_allowed", look for keywords like "ChatGPT", "AI tools", "generative AI"
 - For "late_days_total", look for phrases like "X late days for the semester"
 - For "late_days_per_hw", look for "Y late days per assignment"
