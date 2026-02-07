@@ -92,37 +92,117 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
   };
 
   return (
-    <div style={{ width: '100%', padding: '30px 40px', boxSizing: 'border-box', overflow: 'hidden', backgroundColor: '#0a0a0a' }}>
+    <div style={{
+      width: '100%',
+      padding: '40px 50px',
+      boxSizing: 'border-box',
+      overflow: 'hidden',
+      background: 'transparent',
+      animation: 'fadeIn 0.5s ease-in',
+    }}>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+          }
+        `}
+      </style>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px', width: '100%' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '40px',
+        flexWrap: 'wrap',
+        gap: '20px',
+        width: '100%',
+      }}>
         <div style={{ flex: '1 1 200px' }}>
-          <h1 style={{ margin: 0, color: '#e5e5e5' }}>My Courses</h1>
-          <p style={{ margin: '5px 0 0 0', color: '#a3a3a3' }}>
+          <h1 style={{
+            margin: 0,
+            color: '#e5e5e5',
+            fontSize: '36px',
+            fontWeight: '800',
+            letterSpacing: '-1px',
+            background: 'linear-gradient(135deg, #fff 0%, #a3a3a3 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
+            My Courses
+          </h1>
+          <p style={{
+            margin: '8px 0 0 0',
+            color: '#a3a3a3',
+            fontSize: '16px',
+            fontWeight: '500',
+          }}>
             {courses.length === 0 && !isLoading ? 'No courses yet' : `${courses.length} course${courses.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <button
           onClick={onNavigateToUpload}
           style={{
-            padding: '12px 24px',
-            backgroundColor: '#3b82f6',
-            color: '#e5e5e5',
+            padding: '14px 28px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#fff',
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: '12px',
             fontSize: '16px',
-            fontWeight: 'bold',
+            fontWeight: '600',
             cursor: 'pointer',
             whiteSpace: 'nowrap',
+            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
           }}
         >
-          Add New Course
+          + Add New Course
         </button>
       </div>
 
       {/* Loading State */}
       {isLoading && (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#a3a3a3' }}>
-          <p>Loading courses...</p>
+        <div style={{
+          textAlign: 'center',
+          padding: '60px',
+          color: '#a3a3a3',
+          animation: 'pulse 2s ease-in-out infinite',
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            margin: '0 auto 20px',
+            border: '4px solid rgba(59, 130, 246, 0.2)',
+            borderTop: '4px solid #3b82f6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }} />
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}
+          </style>
+          <p style={{ fontSize: '18px', fontWeight: '500' }}>Loading courses...</p>
         </div>
       )}
 
@@ -130,14 +210,20 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
       {error && !isLoading && (
         <div
           style={{
-            padding: '20px',
-            backgroundColor: '#7f1d1d',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
+            padding: '30px',
+            background: 'linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(127, 29, 29, 0.1) 100%)',
+            border: '2px solid rgba(239, 68, 68, 0.5)',
+            borderRadius: '16px',
             color: '#e5e5e5',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)',
           }}
         >
-          <strong>Error:</strong> {error}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '24px' }}>⚠️</span>
+            <strong style={{ fontSize: '18px' }}>Error</strong>
+          </div>
+          <p style={{ margin: '0', fontSize: '15px', opacity: 0.9 }}>{error}</p>
         </div>
       )}
 
@@ -146,28 +232,59 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
         <div
           style={{
             textAlign: 'center',
-            padding: '60px 20px',
-            backgroundColor: '#1a1a1a',
-            borderRadius: '12px',
-            border: '2px dashed #404040',
+            padding: '80px 40px',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.05) 100%)',
+            borderRadius: '20px',
+            border: '2px dashed rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            animation: 'slideUp 0.6s ease-out',
           }}
         >
-          {/* Empty state icon removed */}
-          <h2 style={{ color: '#a3a3a3', marginBottom: '10px' }}>No courses yet</h2>
-          <p style={{ color: '#a3a3a3', marginBottom: '20px' }}>
-            Upload your first syllabus to get started!
+          <div style={{
+            fontSize: '64px',
+            marginBottom: '20px',
+            opacity: 0.6,
+          }}>
+            📚
+          </div>
+          <h2 style={{
+            color: '#e5e5e5',
+            marginBottom: '12px',
+            fontSize: '24px',
+            fontWeight: '700',
+          }}>
+            No courses yet
+          </h2>
+          <p style={{
+            color: '#a3a3a3',
+            marginBottom: '30px',
+            fontSize: '16px',
+            maxWidth: '400px',
+            margin: '0 auto 30px',
+          }}>
+            Upload your first syllabus to get started with your academic journey!
           </p>
           <button
             onClick={onNavigateToUpload}
             style={{
-              padding: '12px 24px',
-              backgroundColor: '#10b981',
-              color: '#e5e5e5',
+              padding: '14px 32px',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#fff',
               border: 'none',
-              borderRadius: '8px',
+              borderRadius: '12px',
               fontSize: '16px',
-              fontWeight: 'bold',
+              fontWeight: '600',
               cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
             }}
           >
             Upload Syllabus
@@ -177,51 +294,84 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
 
       {/* Course Cards */}
       {!isLoading && !error && courses.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '24px' }}>
-          {courses.map((course) => (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
+          gap: '28px',
+          animation: 'slideUp 0.6s ease-out',
+        }}>
+          {courses.map((course, index) => (
             <div
               key={course.id}
               onClick={() => onNavigateToCourse(course.id)}
               style={{
-                backgroundColor: '#2d2d2d',
-                border: '1px solid #404040',
-                borderRadius: '12px',
-                padding: '20px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                transition: 'transform 0.2s, box-shadow 0.2s, background-color 0.2s',
+                background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.6) 0%, rgba(30, 30, 46, 0.4) 100%)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '20px',
+                padding: '28px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                backdropFilter: 'blur(10px)',
+                animation: `slideUp 0.6s ease-out ${index * 0.1}s both`,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
-                e.currentTarget.style.backgroundColor = '#3a3a3a';
+                e.currentTarget.style.transform = 'translateY(-8px)';
+                e.currentTarget.style.boxShadow = '0 12px 40px rgba(59, 130, 246, 0.2)';
+                e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-                e.currentTarget.style.backgroundColor = '#2d2d2d';
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
               }}
             >
+              {/* Gradient Overlay */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%)',
+                borderRadius: '20px 20px 0 0',
+              }} />
+
               {/* Course Header */}
-              <div style={{ marginBottom: '15px' }}>
+              <div style={{ marginBottom: '20px' }}>
                 <div
                   style={{
                     display: 'inline-block',
-                    padding: '4px 12px',
-                    backgroundColor: '#1e3a8a',
+                    padding: '6px 16px',
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
                     color: '#60a5fa',
-                    borderRadius: '20px',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    marginBottom: '10px',
+                    borderRadius: '25px',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    marginBottom: '14px',
+                    letterSpacing: '0.5px',
                   }}
                 >
                   {course.code}
                 </div>
-                <h3 style={{ margin: '8px 0', fontSize: '18px', color: '#e5e5e5' }}>
+                <h3 style={{
+                  margin: '10px 0',
+                  fontSize: '20px',
+                  fontWeight: '700',
+                  color: '#e5e5e5',
+                  lineHeight: '1.3',
+                }}>
                   {course.name}
                 </h3>
-                <p style={{ margin: '4px 0', fontSize: '14px', color: '#a3a3a3' }}>
+                <p style={{
+                  margin: '6px 0 0 0',
+                  fontSize: '14px',
+                  color: '#a3a3a3',
+                  fontWeight: '500',
+                }}>
                   {course.term}
                 </p>
               </div>
@@ -229,38 +379,68 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
               {/* Next Deadline */}
               <div
                 style={{
-                  borderTop: '1px solid #404040',
-                  paddingTop: '15px',
-                  marginTop: '15px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  paddingTop: '20px',
+                  marginTop: '20px',
                 }}
               >
                 {course.nextDeadline ? (
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '12px', color: '#a3a3a3', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      marginBottom: '12px',
+                    }}>
+                      <span style={{
+                        fontSize: '11px',
+                        color: '#a3a3a3',
+                        textTransform: 'uppercase',
+                        fontWeight: '700',
+                        letterSpacing: '1px',
+                      }}>
                         Next Deadline
                       </span>
                     </div>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '15px', fontWeight: '500', color: '#e5e5e5' }}>
+                    <p style={{
+                      margin: '0 0 12px 0',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      color: '#e5e5e5',
+                    }}>
                       {course.nextDeadline.name}
                     </p>
                     <div
                       style={{
                         display: 'inline-block',
-                        padding: '6px 12px',
-                        backgroundColor: getUrgencyColor(course.nextDeadline.dueDate),
-                        color: '#e5e5e5',
-                        borderRadius: '6px',
+                        padding: '8px 16px',
+                        background: `linear-gradient(135deg, ${getUrgencyColor(course.nextDeadline.dueDate)} 0%, ${getUrgencyColor(course.nextDeadline.dueDate)}dd 100%)`,
+                        color: '#fff',
+                        borderRadius: '10px',
                         fontSize: '14px',
-                        fontWeight: 'bold',
+                        fontWeight: '700',
+                        boxShadow: `0 4px 12px ${getUrgencyColor(course.nextDeadline.dueDate)}40`,
                       }}
                     >
                       {formatDate(course.nextDeadline.dueDate)}
                     </div>
                   </div>
                 ) : (
-                  <div style={{ textAlign: 'center', padding: '20px 0', color: '#a3a3a3' }}>
-                    <p style={{ margin: 0, fontSize: '14px' }}>No upcoming deadlines</p>
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '24px 0',
+                    color: '#a3a3a3',
+                    background: 'rgba(16, 185, 129, 0.05)',
+                    borderRadius: '12px',
+                  }}>
+                    <span style={{ fontSize: '20px', marginBottom: '8px', display: 'block' }}>✓</span>
+                    <p style={{
+                      margin: 0,
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}>
+                      No upcoming deadlines
+                    </p>
                   </div>
                 )}
               </div>

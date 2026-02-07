@@ -1,0 +1,22 @@
+# AI Academic Advisor Dependencies
+
+# Dedalus Labs MCP Client
+dedalus-labs>=0.1.0
+dedalus-mcp>=0.1.0
+
+# OpenAI API
+openai>=1.12.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Supabase client (for direct testing)
+supabase>=2.0.0
+
+# Web API framework (optional - for api_example.py)
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.0.0
+
+# Async support (usually included in Python 3.7+)
+# asyncio is built-in

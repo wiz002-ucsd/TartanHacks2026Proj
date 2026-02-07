@@ -99,48 +99,152 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
   };
 
   return (
-    <div style={{ width: '100%', padding: '30px 40px', maxWidth: '1400px', margin: '0 auto', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
-      <h1 style={{ color: '#e5e5e5' }}>Syllabus Upload & Analysis</h1>
-      <p style={{ color: '#a3a3a3' }}>Upload a syllabus PDF or paste text to extract structured course information</p>
+    <div style={{
+      width: '100%',
+      padding: '50px',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      background: 'transparent',
+      minHeight: '100vh',
+      animation: 'fadeIn 0.6s ease-in',
+    }}>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
+      <div style={{ animation: 'slideUp 0.5s ease-out' }}>
+        <h1 style={{
+          color: '#e5e5e5',
+          fontSize: '40px',
+          fontWeight: '800',
+          margin: '0 0 12px 0',
+          background: 'linear-gradient(135deg, #fff 0%, #a3a3a3 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-1px',
+        }}>
+          Syllabus Upload & Analysis
+        </h1>
+        <p style={{
+          color: '#a3a3a3',
+          fontSize: '17px',
+          fontWeight: '500',
+          marginBottom: '32px',
+        }}>
+          Upload a syllabus PDF or paste text to extract structured course information
+        </p>
+      </div>
 
       {/* Mode Toggle */}
-      <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+      <div style={{
+        marginTop: '28px',
+        marginBottom: '32px',
+        animation: 'slideUp 0.5s ease-out 0.1s both',
+      }}>
         <button
           onClick={() => setUploadMode('file')}
           style={{
-            padding: '10px 20px',
-            marginRight: '10px',
-            backgroundColor: uploadMode === 'file' ? '#3b82f6' : '#2d2d2d',
+            padding: '12px 28px',
+            marginRight: '14px',
+            background: uploadMode === 'file'
+              ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+              : 'rgba(255, 255, 255, 0.05)',
             color: '#e5e5e5',
-            border: '1px solid #404040',
-            borderRadius: '4px',
+            border: uploadMode === 'file' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px',
             cursor: 'pointer',
-            fontWeight: uploadMode === 'file' ? 'bold' : 'normal',
+            fontWeight: uploadMode === 'file' ? '700' : '500',
+            fontSize: '15px',
+            transition: 'all 0.3s ease',
+            boxShadow: uploadMode === 'file' ? '0 4px 15px rgba(59, 130, 246, 0.3)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (uploadMode !== 'file') {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (uploadMode !== 'file') {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }
           }}
         >
-          Upload File
+          📁 Upload File
         </button>
         <button
           onClick={() => setUploadMode('text')}
           style={{
-            padding: '10px 20px',
-            backgroundColor: uploadMode === 'text' ? '#3b82f6' : '#2d2d2d',
+            padding: '12px 28px',
+            background: uploadMode === 'text'
+              ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+              : 'rgba(255, 255, 255, 0.05)',
             color: '#e5e5e5',
-            border: '1px solid #404040',
-            borderRadius: '4px',
+            border: uploadMode === 'text' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px',
             cursor: 'pointer',
-            fontWeight: uploadMode === 'text' ? 'bold' : 'normal',
+            fontWeight: uploadMode === 'text' ? '700' : '500',
+            fontSize: '15px',
+            transition: 'all 0.3s ease',
+            boxShadow: uploadMode === 'text' ? '0 4px 15px rgba(59, 130, 246, 0.3)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (uploadMode !== 'text') {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (uploadMode !== 'text') {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }
           }}
         >
-          Paste Text
+          📝 Paste Text
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+      <form onSubmit={handleSubmit} style={{
+        marginTop: '28px',
+        animation: 'slideUp 0.5s ease-out 0.2s both',
+      }}>
         {/* File Upload Mode */}
         {uploadMode === 'file' && (
-          <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="file-upload" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#e5e5e5' }}>
+          <div style={{
+            marginBottom: '28px',
+            padding: '32px',
+            background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+            border: '2px dashed rgba(255, 255, 255, 0.2)',
+            borderRadius: '20px',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s ease',
+          }}
+          onDragEnter={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.6)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)';
+          }}
+          onDragLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)';
+          }}>
+            <label htmlFor="file-upload" style={{
+              display: 'block',
+              marginBottom: '12px',
+              fontWeight: '700',
+              color: '#e5e5e5',
+              fontSize: '16px',
+            }}>
               Upload Syllabus File (PDF or TXT)
             </label>
             <input
@@ -150,17 +254,28 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
               onChange={handleFileChange}
               disabled={isLoading}
               style={{
-                padding: '8px',
-                border: '1px solid #404040',
-                borderRadius: '4px',
+                padding: '14px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
                 width: '100%',
-                backgroundColor: '#1a1a1a',
+                background: 'rgba(255, 255, 255, 0.05)',
                 color: '#e5e5e5',
+                fontSize: '15px',
+                cursor: 'pointer',
               }}
             />
             {selectedFile && (
-              <p style={{ marginTop: '8px', fontSize: '14px', color: '#a3a3a3' }}>
-                Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+              <p style={{
+                marginTop: '14px',
+                fontSize: '14px',
+                color: '#10b981',
+                fontWeight: '500',
+                padding: '10px 16px',
+                background: 'rgba(16, 185, 129, 0.1)',
+                borderRadius: '10px',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+              }}>
+                ✓ Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
               </p>
             )}
           </div>
@@ -168,8 +283,14 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
 
         {/* Text Paste Mode */}
         {uploadMode === 'text' && (
-          <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="syllabus-text" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#e5e5e5' }}>
+          <div style={{ marginBottom: '28px' }}>
+            <label htmlFor="syllabus-text" style={{
+              display: 'block',
+              marginBottom: '12px',
+              fontWeight: '700',
+              color: '#e5e5e5',
+              fontSize: '16px',
+            }}>
               Paste Syllabus Text
             </label>
             <textarea
@@ -181,14 +302,16 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
               rows={15}
               style={{
                 width: '100%',
-                padding: '12px',
-                border: '1px solid #404040',
-                borderRadius: '4px',
+                padding: '18px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
                 fontFamily: 'monospace',
                 fontSize: '14px',
                 resize: 'vertical',
-                backgroundColor: '#1a1a1a',
+                background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
                 color: '#e5e5e5',
+                backdropFilter: 'blur(10px)',
+                lineHeight: '1.6',
               }}
             />
           </div>
@@ -199,17 +322,32 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
           type="submit"
           disabled={isLoading || (uploadMode === 'file' ? !selectedFile : !syllabusText.trim())}
           style={{
-            padding: '12px 24px',
-            backgroundColor: isLoading ? '#404040' : '#10b981',
-            color: '#e5e5e5',
+            padding: '16px 36px',
+            background: isLoading
+              ? 'rgba(115, 115, 115, 0.3)'
+              : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#fff',
             border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: 'bold',
+            borderRadius: '14px',
+            fontSize: '17px',
+            fontWeight: '700',
             cursor: isLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading || (uploadMode === 'file' ? !selectedFile : !syllabusText.trim()) ? 0.5 : 1,
+            boxShadow: isLoading ? 'none' : '0 4px 20px rgba(16, 185, 129, 0.3)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading && (uploadMode === 'file' ? selectedFile : syllabusText.trim())) {
+              e.currentTarget.style.transform = 'translateY(-3px)';
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = isLoading ? 'none' : '0 4px 20px rgba(16, 185, 129, 0.3)';
           }}
         >
-          {isLoading ? 'Processing...' : 'Analyze Syllabus'}
+          {isLoading ? '⏳ Processing...' : '🚀 Analyze Syllabus'}
         </button>
       </form>
 
@@ -217,19 +355,52 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
       {response && !response.success && (
         <div
           style={{
-            marginTop: '30px',
-            padding: '20px',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
-            backgroundColor: '#7f1d1d',
+            marginTop: '40px',
+            padding: '32px',
+            border: '2px solid rgba(239, 68, 68, 0.5)',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(127, 29, 29, 0.1) 100%)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)',
+            animation: 'slideUp 0.5s ease-out',
           }}
         >
-          <h2 style={{ margin: '0 0 10px 0', color: '#e5e5e5' }}>
-            Error
-          </h2>
-          <p style={{ color: '#e5e5e5' }}><strong>Error:</strong> {response.error}</p>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '16px',
+          }}>
+            <span style={{ fontSize: '32px' }}>⚠️</span>
+            <h2 style={{
+              margin: '0',
+              color: '#e5e5e5',
+              fontSize: '24px',
+              fontWeight: '800',
+            }}>
+              Error
+            </h2>
+          </div>
+          <p style={{
+            color: '#e5e5e5',
+            fontSize: '16px',
+            lineHeight: '1.6',
+            margin: '0 0 12px 0',
+          }}>
+            <strong>Error:</strong> {response.error}
+          </p>
           {response.details && (
-            <pre style={{ marginTop: '10px', fontSize: '12px', overflow: 'auto', color: '#e5e5e5' }}>
+            <pre style={{
+              marginTop: '16px',
+              padding: '16px',
+              fontSize: '13px',
+              overflow: 'auto',
+              color: '#e5e5e5',
+              background: 'rgba(0, 0, 0, 0.3)',
+              borderRadius: '12px',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              lineHeight: '1.5',
+            }}>
               {response.details}
             </pre>
           )}

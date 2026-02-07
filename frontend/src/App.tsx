@@ -29,10 +29,12 @@ function App() {
       {/* Navigation Bar */}
       <nav
         style={{
-          backgroundColor: '#1a1a1a',
-          padding: '15px 0',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+          background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+          padding: '20px 0',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
           marginBottom: '0',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
         }}
       >
         <div
@@ -44,93 +46,119 @@ function App() {
             justifyContent: 'space-between',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
             <h1
               style={{
                 margin: 0,
-                color: '#e5e5e5',
-                fontSize: '24px',
-                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: '28px',
+                fontWeight: '800',
                 cursor: 'pointer',
+                letterSpacing: '-0.5px',
+                transition: 'all 0.3s ease',
               }}
               onClick={() => setCurrentPage('home')}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
-              Academic Assistant
+              Sunzi
             </h1>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => setCurrentPage('home')}
                 style={{
-                  padding: '8px 20px',
-                  backgroundColor: currentPage === 'home' ? '#3b82f6' : 'transparent',
+                  padding: '10px 24px',
+                  background: currentPage === 'home' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
                   color: '#e5e5e5',
-                  border: currentPage === 'home' ? 'none' : '1px solid #404040',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: currentPage === 'home' ? 'bold' : 'normal',
+                  border: currentPage === 'home' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  fontWeight: currentPage === 'home' ? '600' : '500',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: currentPage === 'home' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'home') {
-                    e.currentTarget.style.backgroundColor = '#3a3a3a';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (currentPage !== 'home') {
-                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                   }
                 }}
               >
-                Home
+                Courses
               </button>
               <button
                 onClick={() => setCurrentPage('dashboard')}
                 style={{
-                  padding: '8px 20px',
-                  backgroundColor: currentPage === 'dashboard' ? '#3b82f6' : 'transparent',
+                  padding: '10px 24px',
+                  background: currentPage === 'dashboard' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
                   color: '#e5e5e5',
-                  border: currentPage === 'dashboard' ? 'none' : '1px solid #404040',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: currentPage === 'dashboard' ? 'bold' : 'normal',
+                  border: currentPage === 'dashboard' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  fontWeight: currentPage === 'dashboard' ? '600' : '500',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: currentPage === 'dashboard' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'dashboard') {
-                    e.currentTarget.style.backgroundColor = '#3a3a3a';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (currentPage !== 'dashboard') {
-                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                   }
                 }}
               >
-                🧠 Dashboard
+                AI View
               </button>
               <button
                 onClick={() => setCurrentPage('upload')}
                 style={{
-                  padding: '8px 20px',
-                  backgroundColor: currentPage === 'upload' ? '#3b82f6' : 'transparent',
+                  padding: '10px 24px',
+                  background: currentPage === 'upload' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
                   color: '#e5e5e5',
-                  border: currentPage === 'upload' ? 'none' : '1px solid #404040',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: currentPage === 'upload' ? 'bold' : 'normal',
+                  border: currentPage === 'upload' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  fontSize: '15px',
+                  fontWeight: currentPage === 'upload' ? '600' : '500',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: currentPage === 'upload' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'upload') {
-                    e.currentTarget.style.backgroundColor = '#3a3a3a';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (currentPage !== 'upload') {
-                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                   }
                 }}
               >
@@ -142,7 +170,10 @@ function App() {
       </nav>
 
       {/* Page Content */}
-      <div style={{ minHeight: 'calc(100vh - 70px)', backgroundColor: '#0a0a0a' }}>
+      <div style={{
+        minHeight: 'calc(100vh - 70px)',
+        background: 'linear-gradient(180deg, #0a0a0a 0%, #0f0f1e 100%)',
+      }}>
         {currentPage === 'home' && (
           <Home
             key={homeRefreshKey}

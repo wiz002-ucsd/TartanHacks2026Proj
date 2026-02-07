@@ -163,9 +163,54 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
 
   if (isLoading) {
     return (
-      <div style={{ width: '100%', padding: '30px 40px', boxSizing: 'border-box', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ fontSize: '18px', color: '#a3a3a3' }}>Loading course details...</p>
+      <div style={{
+        width: '100%',
+        padding: '50px',
+        boxSizing: 'border-box',
+        background: 'transparent',
+        minHeight: '100vh',
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '80px 20px',
+          animation: 'pulse 2s ease-in-out infinite',
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            margin: '0 auto 24px',
+            border: '4px solid rgba(59, 130, 246, 0.2)',
+            borderTop: '4px solid #3b82f6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }} />
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.8; }
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `}
+          </style>
+          <p style={{
+            fontSize: '20px',
+            color: '#a3a3a3',
+            fontWeight: '600',
+          }}>
+            Loading course details...
+          </p>
         </div>
       </div>
     );
@@ -173,30 +218,56 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
 
   if (error || !course) {
     return (
-      <div style={{ width: '100%', padding: '30px 40px', boxSizing: 'border-box', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
+      <div style={{
+        width: '100%',
+        padding: '50px',
+        boxSizing: 'border-box',
+        background: 'transparent',
+        minHeight: '100vh',
+        animation: 'fadeIn 0.5s ease-in',
+      }}>
         <button
           onClick={onBack}
           style={{
-            padding: '8px 16px',
-            backgroundColor: 'transparent',
+            padding: '12px 24px',
+            background: 'rgba(59, 130, 246, 0.1)',
             color: '#3b82f6',
-            border: '1px solid #3b82f6',
-            borderRadius: '4px',
+            border: '1px solid rgba(59, 130, 246, 0.5)',
+            borderRadius: '12px',
             cursor: 'pointer',
-            fontSize: '14px',
-            marginBottom: '20px',
+            fontSize: '15px',
+            fontWeight: '600',
+            marginBottom: '24px',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+            e.currentTarget.style.transform = 'translateX(-4px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
+            e.currentTarget.style.transform = 'translateX(0)';
           }}
         >
           ← Back to Courses
         </button>
         <div style={{
-          padding: '20px',
-          backgroundColor: '#7f1d1d',
-          border: '1px solid #ef4444',
-          borderRadius: '8px',
+          padding: '32px',
+          background: 'linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(127, 29, 29, 0.1) 100%)',
+          border: '2px solid rgba(239, 68, 68, 0.5)',
+          borderRadius: '20px',
           color: '#e5e5e5',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)',
         }}>
-          <strong>Error:</strong> {error || 'Course not found'}
+          <div style={{
+            fontSize: '24px',
+            marginBottom: '12px',
+          }}>⚠️</div>
+          <strong style={{ fontSize: '18px' }}>Error:</strong>
+          <p style={{ margin: '8px 0 0 0', fontSize: '15px' }}>
+            {error || 'Course not found'}
+          </p>
         </div>
       </div>
     );
@@ -237,19 +308,42 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
   })();
 
   return (
-    <div style={{ width: '100%', padding: '30px 40px', boxSizing: 'border-box', backgroundColor: '#0a0a0a', minHeight: '100vh' }}>
+    <div style={{
+      width: '100%',
+      padding: '50px',
+      boxSizing: 'border-box',
+      background: 'transparent',
+      minHeight: '100vh',
+      animation: 'fadeIn 0.6s ease-in',
+    }}>
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center' }}>
+      <div style={{
+        display: 'flex',
+        gap: '14px',
+        marginBottom: '28px',
+        alignItems: 'center',
+        animation: 'slideUp 0.5s ease-out',
+      }}>
         <button
           onClick={onBack}
           style={{
-            padding: '8px 16px',
-            backgroundColor: 'transparent',
+            padding: '12px 24px',
+            background: 'rgba(59, 130, 246, 0.1)',
             color: '#3b82f6',
-            border: '1px solid #3b82f6',
-            borderRadius: '4px',
+            border: '1px solid rgba(59, 130, 246, 0.5)',
+            borderRadius: '12px',
             cursor: 'pointer',
-            fontSize: '14px',
+            fontSize: '15px',
+            fontWeight: '600',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+            e.currentTarget.style.transform = 'translateX(-4px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
+            e.currentTarget.style.transform = 'translateX(0)';
           }}
         >
           ← Back to Courses
@@ -258,36 +352,68 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
           onClick={handleDeleteClick}
           disabled={isDeleting}
           style={{
-            padding: '8px 16px',
-            backgroundColor: isDeleting ? '#737373' : '#ef4444',
-            color: '#e5e5e5',
-            border: 'none',
-            borderRadius: '4px',
+            padding: '12px 24px',
+            background: isDeleting
+              ? 'rgba(115, 115, 115, 0.3)'
+              : 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%)',
+            color: isDeleting ? '#737373' : '#ef4444',
+            border: `1px solid ${isDeleting ? 'rgba(115, 115, 115, 0.5)' : 'rgba(239, 68, 68, 0.5)'}`,
+            borderRadius: '12px',
             cursor: isDeleting ? 'not-allowed' : 'pointer',
-            fontSize: '14px',
+            fontSize: '15px',
+            fontWeight: '600',
             opacity: isDeleting ? 0.6 : 1,
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (!isDeleting) {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isDeleting) {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%)';
+            }
           }}
         >
-          {isDeleting ? 'Deleting...' : 'Delete Course'}
+          {isDeleting ? 'Deleting...' : '🗑️ Delete Course'}
         </button>
       </div>
 
       {/* Course Header */}
-      <div style={{ marginBottom: '30px' }}>
+      <div style={{
+        marginBottom: '40px',
+        animation: 'slideUp 0.6s ease-out 0.1s both',
+      }}>
         <div style={{
           display: 'inline-block',
-          padding: '6px 16px',
-          backgroundColor: '#1e3a8a',
+          padding: '8px 20px',
+          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
           color: '#60a5fa',
-          borderRadius: '20px',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          marginBottom: '12px',
+          borderRadius: '25px',
+          fontSize: '15px',
+          fontWeight: '700',
+          marginBottom: '16px',
+          letterSpacing: '0.5px',
         }}>
           {course.code}
         </div>
-        <h1 style={{ margin: '0 0 8px 0', fontSize: '32px', color: '#e5e5e5' }}>{course.name}</h1>
-        <p style={{ margin: '0', fontSize: '16px', color: '#a3a3a3' }}>
+        <h1 style={{
+          margin: '0 0 12px 0',
+          fontSize: '40px',
+          fontWeight: '800',
+          color: '#e5e5e5',
+          letterSpacing: '-1px',
+        }}>
+          {course.name}
+        </h1>
+        <p style={{
+          margin: '0',
+          fontSize: '17px',
+          color: '#a3a3a3',
+          fontWeight: '500',
+        }}>
           {course.term} {course.units && `• ${course.units} units`}
         </p>
       </div>
@@ -295,16 +421,25 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
       {/* Priority Deadlines (Next 2 Weeks) */}
       {upcomingEvents.length > 0 && (
         <div style={{
-          padding: '24px',
-          backgroundColor: '#78350f',
-          border: '2px solid #f59e0b',
-          borderRadius: '12px',
-          marginBottom: '30px',
+          padding: '32px',
+          background: 'linear-gradient(135deg, rgba(120, 53, 15, 0.4) 0%, rgba(120, 53, 15, 0.2) 100%)',
+          border: '2px solid rgba(245, 158, 11, 0.5)',
+          borderRadius: '20px',
+          marginBottom: '40px',
+          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.2)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.2s both',
         }}>
-          <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', color: '#e5e5e5' }}>
-            Priority: Upcoming Deadlines (Next 2 Weeks)
+          <h2 style={{
+            margin: '0 0 20px 0',
+            fontSize: '22px',
+            fontWeight: '800',
+            color: '#e5e5e5',
+            letterSpacing: '-0.5px',
+          }}>
+            ⚠️ Priority: Upcoming Deadlines (Next 2 Weeks)
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {upcomingEvents.map((event) => {
               const daysUntil = getDaysUntil(event.due_date!);
               return (
@@ -314,46 +449,75 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '16px',
-                    backgroundColor: '#2d2d2d',
-                    borderRadius: '8px',
-                    border: '1px solid #f59e0b',
+                    padding: '20px 24px',
+                    background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.5) 0%, rgba(30, 30, 46, 0.3) 100%)',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateX(6px)';
+                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(245, 158, 11, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateX(0)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                       <span style={{
                         display: 'inline-block',
-                        padding: '4px 8px',
-                        backgroundColor: '#404040',
+                        padding: '6px 12px',
+                        background: 'rgba(255, 255, 255, 0.1)',
                         color: '#e5e5e5',
-                        borderRadius: '4px',
+                        borderRadius: '8px',
                         fontSize: '12px',
                         textTransform: 'capitalize',
+                        fontWeight: '600',
                       }}>
                         {event.type}
                       </span>
-                      <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#e5e5e5' }}>{event.name}</h3>
+                      <h3 style={{
+                        margin: 0,
+                        fontSize: '17px',
+                        fontWeight: '700',
+                        color: '#e5e5e5',
+                      }}>
+                        {event.name}
+                      </h3>
                     </div>
                     {event.weight !== null && (
-                      <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#a3a3a3' }}>
+                      <p style={{
+                        margin: '4px 0 0 0',
+                        fontSize: '14px',
+                        color: '#a3a3a3',
+                        fontWeight: '500',
+                      }}>
                         Weight: {event.weight}%
                       </p>
                     )}
                   </div>
-                  <div style={{ textAlign: 'right' }}>
+                  <div style={{ textAlign: 'right', marginLeft: '20px' }}>
                     <div style={{
                       display: 'inline-block',
-                      padding: '8px 16px',
-                      backgroundColor: getUrgencyColor(daysUntil),
-                      color: '#e5e5e5',
-                      borderRadius: '6px',
-                      fontWeight: 'bold',
+                      padding: '10px 18px',
+                      background: `linear-gradient(135deg, ${getUrgencyColor(daysUntil)} 0%, ${getUrgencyColor(daysUntil)}dd 100%)`,
+                      color: '#fff',
+                      borderRadius: '12px',
+                      fontWeight: '700',
                       fontSize: '14px',
+                      boxShadow: `0 4px 16px ${getUrgencyColor(daysUntil)}40`,
                     }}>
                       {daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
                     </div>
-                    <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: '#a3a3a3' }}>
+                    <p style={{
+                      margin: '8px 0 0 0',
+                      fontSize: '13px',
+                      color: '#a3a3a3',
+                      fontWeight: '500',
+                    }}>
                       {formatDate(event.due_date)}
                     </p>
                   </div>
@@ -366,29 +530,54 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
 
       {upcomingEvents.length === 0 && (
         <div style={{
-          padding: '24px',
-          backgroundColor: '#065f46',
-          border: '2px solid #10b981',
-          borderRadius: '12px',
-          marginBottom: '30px',
+          padding: '32px',
+          background: 'linear-gradient(135deg, rgba(6, 95, 70, 0.3) 0%, rgba(6, 95, 70, 0.1) 100%)',
+          border: '2px solid rgba(16, 185, 129, 0.5)',
+          borderRadius: '20px',
+          marginBottom: '40px',
           textAlign: 'center',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(16, 185, 129, 0.2)',
+          animation: 'slideUp 0.6s ease-out 0.2s both',
         }}>
-          <p style={{ margin: 0, fontSize: '16px', color: '#e5e5e5' }}>
+          <div style={{ fontSize: '32px', marginBottom: '12px' }}>✓</div>
+          <p style={{
+            margin: 0,
+            fontSize: '17px',
+            fontWeight: '600',
+            color: '#e5e5e5',
+          }}>
             No deadlines in the next 2 weeks
           </p>
         </div>
       )}
 
       {/* Course Summary Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '24px',
+        marginBottom: '40px',
+      }}>
         {/* Grading Breakdown */}
         <div style={{
-          padding: '20px',
-          backgroundColor: '#2d2d2d',
-          border: '1px solid #404040',
-          borderRadius: '12px',
+          padding: '28px',
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.3s both',
         }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #10b981', paddingBottom: '8px', color: '#e5e5e5' }}>
+          <h3 style={{
+            margin: '0 0 20px 0',
+            fontSize: '20px',
+            borderBottom: '3px solid rgba(16, 185, 129, 0.5)',
+            paddingBottom: '12px',
+            color: '#e5e5e5',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+          }}>
             Grading Breakdown
           </h3>
           {gradingItems.length > 0 ? (
@@ -441,12 +630,23 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
 
         {/* Course Policies */}
         <div style={{
-          padding: '20px',
-          backgroundColor: '#2d2d2d',
-          border: '1px solid #404040',
-          borderRadius: '12px',
+          padding: '28px',
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.4s both',
         }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #8b5cf6', paddingBottom: '8px', color: '#e5e5e5' }}>
+          <h3 style={{
+            margin: '0 0 20px 0',
+            fontSize: '20px',
+            borderBottom: '3px solid rgba(139, 92, 246, 0.5)',
+            paddingBottom: '12px',
+            color: '#e5e5e5',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+          }}>
             Course Policies
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -477,14 +677,25 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
       {/* Lecture Roadmap */}
       {course.lectures && course.lectures.length > 0 && (
         <div style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#2d2d2d',
-          border: '1px solid #404040',
-          borderRadius: '12px',
+          marginTop: '40px',
+          padding: '28px',
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.5s both',
         }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #3b82f6', paddingBottom: '8px', color: '#e5e5e5' }}>
-            Lecture Schedule ({course.lectures.length} lectures)
+          <h3 style={{
+            margin: '0 0 20px 0',
+            fontSize: '20px',
+            borderBottom: '3px solid rgba(59, 130, 246, 0.5)',
+            paddingBottom: '12px',
+            color: '#e5e5e5',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+          }}>
+            📅 Lecture Schedule ({course.lectures.length} lectures)
           </h3>
           <LectureRoadmap lectures={course.lectures} />
         </div>
@@ -493,34 +704,120 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
       {/* All Events */}
       {course.events.length > 0 && (
         <div style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#2d2d2d',
-          border: '1px solid #404040',
-          borderRadius: '12px',
+          marginTop: '40px',
+          padding: '28px',
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.6s both',
         }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', borderBottom: '2px solid #f59e0b', paddingBottom: '8px', color: '#e5e5e5' }}>
-            All Course Events ({course.events.length})
+          <h3 style={{
+            margin: '0 0 20px 0',
+            fontSize: '20px',
+            borderBottom: '3px solid rgba(245, 158, 11, 0.5)',
+            paddingBottom: '12px',
+            color: '#e5e5e5',
+            fontWeight: '800',
+            letterSpacing: '-0.5px',
+          }}>
+            📋 All Course Events ({course.events.length})
           </h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+          <div style={{
+            overflowX: 'auto',
+            borderRadius: '12px',
+          }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '14px',
+            }}>
               <thead>
-                <tr style={{ backgroundColor: '#1a1a1a' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Type</th>
-                  <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Name</th>
-                  <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Release Date</th>
-                  <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Due Date</th>
-                  <th style={{ padding: '12px', textAlign: 'left', border: '1px solid #404040', color: '#e5e5e5' }}>Weight</th>
+                <tr style={{
+                  background: 'linear-gradient(135deg, rgba(26, 26, 42, 0.6) 0%, rgba(26, 26, 42, 0.4) 100%)',
+                }}>
+                  <th style={{
+                    padding: '14px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e5e5e5',
+                    fontWeight: '700',
+                  }}>Type</th>
+                  <th style={{
+                    padding: '14px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e5e5e5',
+                    fontWeight: '700',
+                  }}>Name</th>
+                  <th style={{
+                    padding: '14px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e5e5e5',
+                    fontWeight: '700',
+                  }}>Release Date</th>
+                  <th style={{
+                    padding: '14px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e5e5e5',
+                    fontWeight: '700',
+                  }}>Due Date</th>
+                  <th style={{
+                    padding: '14px',
+                    textAlign: 'left',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#e5e5e5',
+                    fontWeight: '700',
+                  }}>Weight</th>
                 </tr>
               </thead>
               <tbody>
                 {course.events.map((event, idx) => (
-                  <tr key={event.id} style={{ backgroundColor: idx % 2 === 0 ? '#2d2d2d' : '#1a1a1a' }}>
-                    <td style={{ padding: '12px', border: '1px solid #404040', textTransform: 'capitalize', color: '#e5e5e5' }}>{event.type}</td>
-                    <td style={{ padding: '12px', border: '1px solid #404040', color: '#e5e5e5' }}>{event.name}</td>
-                    <td style={{ padding: '12px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatDate(event.release_date)}</td>
-                    <td style={{ padding: '12px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatDate(event.due_date)}</td>
-                    <td style={{ padding: '12px', border: '1px solid #404040', color: '#a3a3a3' }}>{formatPercent(event.weight)}</td>
+                  <tr key={event.id} style={{
+                    background: idx % 2 === 0
+                      ? 'rgba(255, 255, 255, 0.02)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                    transition: 'background 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = idx % 2 === 0
+                      ? 'rgba(255, 255, 255, 0.02)'
+                      : 'rgba(255, 255, 255, 0.05)';
+                  }}>
+                    <td style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      textTransform: 'capitalize',
+                      color: '#e5e5e5',
+                      fontWeight: '500',
+                    }}>{event.type}</td>
+                    <td style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      color: '#e5e5e5',
+                      fontWeight: '500',
+                    }}>{event.name}</td>
+                    <td style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      color: '#a3a3a3',
+                    }}>{formatDate(event.release_date)}</td>
+                    <td style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      color: '#a3a3a3',
+                    }}>{formatDate(event.due_date)}</td>
+                    <td style={{
+                      padding: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      color: '#a3a3a3',
+                    }}>{formatPercent(event.weight)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -53,7 +53,50 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDashboardData();
+    const abortController = new AbortController();
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('http://localhost:3001/api/ai-advisor', {
+          signal: abortController.signal
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch AI advisor data');
+        }
+
+        const result = await response.json();
+
+        // Only update state if the request wasn't aborted
+        if (!abortController.signal.aborted) {
+          setData(result);
+        }
+      } catch (err) {
+        // Ignore abort errors
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.log('Request was cancelled');
+          return;
+        }
+        console.error('Error fetching dashboard data:', err);
+        if (!abortController.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Unknown error occurred');
+        }
+      } finally {
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    // Cleanup function to abort the request if component unmounts
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -96,26 +139,54 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div style={{
-        padding: '40px',
+        padding: '80px 40px',
         textAlign: 'center',
         color: theme.colors.text.primary,
-        fontSize: '18px'
+        fontSize: '18px',
+        background: 'transparent',
       }}>
         <div style={{
           display: 'inline-block',
-          width: '50px',
-          height: '50px',
-          border: `4px solid ${theme.colors.bg.elevated}`,
-          borderTop: `4px solid ${theme.colors.primary}`,
+          width: '70px',
+          height: '70px',
+          border: '4px solid rgba(59, 130, 246, 0.2)',
+          borderTop: '4px solid #3b82f6',
           borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
+          animation: 'spin 1s linear infinite',
+          marginBottom: '24px',
         }} />
-        <p style={{ marginTop: '20px' }}>🧠 AI is analyzing your academic workload...</p>
+        <p style={{
+          marginTop: '20px',
+          fontSize: '20px',
+          fontWeight: '600',
+          background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>
+          🧠 AI is analyzing your academic workload...
+        </p>
+        <p style={{
+          marginTop: '12px',
+          fontSize: '15px',
+          color: '#a3a3a3',
+          fontWeight: '500',
+        }}>
+          This may take a few moments
+        </p>
         <style>
           {`
             @keyframes spin {
               0% { transform: rotate(0deg); }
               100% { transform: rotate(360deg); }
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes slideUp {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
             }
           `}
         </style>
@@ -126,26 +197,59 @@ export default function Dashboard() {
   if (error) {
     return (
       <div style={{
-        padding: '40px',
+        padding: '60px 40px',
         textAlign: 'center',
-        color: theme.colors.danger
+        color: theme.colors.danger,
+        animation: 'fadeIn 0.5s ease-in',
       }}>
-        <h2>⚠️ Error Loading Dashboard</h2>
-        <p>{error}</p>
+        <div style={{
+          fontSize: '64px',
+          marginBottom: '20px',
+          opacity: 0.8,
+        }}>
+          ⚠️
+        </div>
+        <h2 style={{
+          fontSize: '28px',
+          fontWeight: '700',
+          marginBottom: '12px',
+          color: '#e5e5e5',
+        }}>
+          Error Loading Dashboard
+        </h2>
+        <p style={{
+          fontSize: '16px',
+          color: '#a3a3a3',
+          maxWidth: '500px',
+          margin: '0 auto 30px',
+        }}>
+          {error}
+        </p>
         <button
           onClick={fetchDashboardData}
           style={{
             marginTop: '20px',
-            padding: '10px 20px',
-            backgroundColor: theme.colors.primary,
-            color: theme.colors.text.primary,
+            padding: '14px 32px',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            color: '#fff',
             border: 'none',
-            borderRadius: theme.borderRadius.md,
+            borderRadius: '12px',
             cursor: 'pointer',
-            fontSize: '16px'
+            fontSize: '16px',
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.3)';
           }}
         >
-          Try Again
+          🔄 Try Again
         </button>
       </div>
     );
@@ -159,26 +263,36 @@ export default function Dashboard() {
 
   return (
     <div style={{
-      padding: '40px',
+      padding: '50px',
       maxWidth: '1400px',
       margin: '0 auto',
-      backgroundColor: theme.colors.bg.primary,
-      minHeight: '100vh'
+      backgroundColor: 'transparent',
+      minHeight: '100vh',
+      animation: 'fadeIn 0.6s ease-in',
     }}>
       {/* Header */}
-      <div style={{ marginBottom: '30px' }}>
+      <div style={{
+        marginBottom: '40px',
+        animation: 'slideUp 0.5s ease-out',
+      }}>
         <h1 style={{
           color: theme.colors.text.primary,
-          fontSize: '32px',
-          fontWeight: 'bold',
-          margin: '0 0 10px 0'
+          fontSize: '40px',
+          fontWeight: '800',
+          margin: '0 0 12px 0',
+          background: 'linear-gradient(135deg, #fff 0%, #a3a3a3 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-1px',
         }}>
-          📊 Your Academic Dashboard
+          Your Academic Dashboard
         </h1>
         <p style={{
           color: theme.colors.text.secondary,
           fontSize: '16px',
-          margin: 0
+          margin: 0,
+          fontWeight: '500',
         }}>
           AI-powered insights and recommendations • Updated {new Date(snapshot.student_overview.snapshot_date).toLocaleDateString()}
         </p>
@@ -187,51 +301,130 @@ export default function Dashboard() {
       {/* Overview Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '20px',
-        marginBottom: '30px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: '24px',
+        marginBottom: '40px',
       }}>
         <div style={{
-          backgroundColor: theme.colors.bg.elevated,
-          padding: '24px',
-          borderRadius: theme.borderRadius.lg,
-          border: `1px solid ${theme.colors.border.primary}`
+          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)',
+          padding: '28px',
+          borderRadius: '20px',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          boxShadow: '0 8px 32px rgba(59, 130, 246, 0.15)',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+          animation: 'slideUp 0.5s ease-out 0.1s both',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.boxShadow = '0 12px 40px rgba(59, 130, 246, 0.25)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(59, 130, 246, 0.15)';
         }}>
-          <div style={{ fontSize: '14px', color: theme.colors.text.secondary, marginBottom: '8px' }}>
+          <div style={{
+            fontSize: '13px',
+            color: theme.colors.text.secondary,
+            marginBottom: '12px',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+          }}>
             Active Courses
           </div>
-          <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.colors.primary }}>
+          <div style={{
+            fontSize: '48px',
+            fontWeight: '800',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
             {snapshot.student_overview.active_courses}
           </div>
         </div>
 
         <div style={{
-          backgroundColor: theme.colors.bg.elevated,
-          padding: '24px',
-          borderRadius: theme.borderRadius.lg,
-          border: `1px solid ${theme.colors.border.primary}`
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%)',
+          padding: '28px',
+          borderRadius: '20px',
+          border: '1px solid rgba(245, 158, 11, 0.3)',
+          boxShadow: '0 8px 32px rgba(245, 158, 11, 0.15)',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+          animation: 'slideUp 0.5s ease-out 0.2s both',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.boxShadow = '0 12px 40px rgba(245, 158, 11, 0.25)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.15)';
         }}>
-          <div style={{ fontSize: '14px', color: theme.colors.text.secondary, marginBottom: '8px' }}>
+          <div style={{
+            fontSize: '13px',
+            color: theme.colors.text.secondary,
+            marginBottom: '12px',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+          }}>
             Upcoming Deadlines
           </div>
-          <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.urgency.soon }}>
+          <div style={{
+            fontSize: '48px',
+            fontWeight: '800',
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
             {snapshot.student_overview.upcoming_deadlines}
           </div>
         </div>
 
         <div style={{
-          backgroundColor: theme.colors.bg.elevated,
-          padding: '24px',
-          borderRadius: theme.borderRadius.lg,
-          border: `1px solid ${snapshot.student_overview.high_risk_window ? theme.urgency.urgent : theme.colors.border.primary}`
+          background: snapshot.student_overview.high_risk_window
+            ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)'
+            : 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)',
+          padding: '28px',
+          borderRadius: '20px',
+          border: `1px solid ${snapshot.student_overview.high_risk_window ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+          boxShadow: snapshot.student_overview.high_risk_window
+            ? '0 8px 32px rgba(239, 68, 68, 0.15)'
+            : '0 8px 32px rgba(16, 185, 129, 0.15)',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+          animation: 'slideUp 0.5s ease-out 0.3s both',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.boxShadow = snapshot.student_overview.high_risk_window
+            ? '0 12px 40px rgba(239, 68, 68, 0.25)'
+            : '0 12px 40px rgba(16, 185, 129, 0.25)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = snapshot.student_overview.high_risk_window
+            ? '0 8px 32px rgba(239, 68, 68, 0.15)'
+            : '0 8px 32px rgba(16, 185, 129, 0.15)';
         }}>
-          <div style={{ fontSize: '14px', color: theme.colors.text.secondary, marginBottom: '8px' }}>
+          <div style={{
+            fontSize: '13px',
+            color: theme.colors.text.secondary,
+            marginBottom: '12px',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+          }}>
             Workload Status
           </div>
           <div style={{
-            fontSize: '20px',
-            fontWeight: 'bold',
-            color: snapshot.student_overview.high_risk_window ? theme.urgency.urgent : theme.urgency.future
+            fontSize: '22px',
+            fontWeight: '700',
+            color: snapshot.student_overview.high_risk_window ? theme.urgency.urgent : theme.urgency.future,
           }}>
             {snapshot.student_overview.high_risk_window ? '⚠️ High Pressure' : '✅ Manageable'}
           </div>
@@ -240,29 +433,50 @@ export default function Dashboard() {
 
       {/* AI Summary */}
       <div style={{
-        backgroundColor: theme.colors.bg.elevated,
-        padding: '30px',
-        borderRadius: theme.borderRadius.lg,
-        marginBottom: '30px',
-        border: `2px solid ${theme.colors.primary}`,
-        boxShadow: theme.shadows.glow
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+        padding: '36px',
+        borderRadius: '24px',
+        marginBottom: '40px',
+        border: '2px solid rgba(139, 92, 246, 0.3)',
+        boxShadow: '0 12px 40px rgba(139, 92, 246, 0.2)',
+        backdropFilter: 'blur(10px)',
+        position: 'relative',
+        overflow: 'hidden',
+        animation: 'slideUp 0.6s ease-out 0.4s both',
       }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: 'linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%)',
+        }} />
         <h2 style={{
           color: theme.colors.text.primary,
-          fontSize: '24px',
-          fontWeight: 'bold',
-          margin: '0 0 16px 0',
+          fontSize: '26px',
+          fontWeight: '800',
+          margin: '0 0 20px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '12px',
+          letterSpacing: '-0.5px',
         }}>
-          🧠 AI Summary
+          <span style={{
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
+            🧠 AI Summary
+          </span>
         </h2>
         <p style={{
           color: theme.colors.text.primary,
-          fontSize: '16px',
-          lineHeight: '1.6',
-          margin: 0
+          fontSize: '17px',
+          lineHeight: '1.8',
+          margin: 0,
+          fontWeight: '400',
         }}>
           {analysis.summary}
         </p>
@@ -272,66 +486,108 @@ export default function Dashboard() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: '30px',
-        marginBottom: '30px'
+        gap: '32px',
+        marginBottom: '40px',
       }}>
         {/* Priority Tasks */}
         <div style={{
-          backgroundColor: theme.colors.bg.elevated,
-          padding: '30px',
-          borderRadius: theme.borderRadius.lg,
-          border: `1px solid ${theme.colors.border.primary}`
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          padding: '32px',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.5s both',
         }}>
           <h2 style={{
             color: theme.colors.text.primary,
-            fontSize: '20px',
-            fontWeight: 'bold',
-            margin: '0 0 20px 0',
+            fontSize: '22px',
+            fontWeight: '800',
+            margin: '0 0 24px 0',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px'
+            gap: '12px',
+            letterSpacing: '-0.5px',
           }}>
             🎯 Priority Order
           </h2>
 
           {analysis.priority_order.map((task, index) => (
             <div key={index} style={{
-              backgroundColor: theme.colors.bg.primary,
-              padding: '16px',
-              borderRadius: theme.borderRadius.md,
-              marginBottom: '12px',
-              border: `2px solid ${index === 0 ? theme.urgency.urgent : theme.colors.border.primary}`
+              background: index === 0
+                ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
+              padding: '20px',
+              borderRadius: '16px',
+              marginBottom: '14px',
+              border: index === 0 ? '2px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: index === 0 ? '0 4px 20px rgba(239, 68, 68, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(4px)';
+              e.currentTarget.style.boxShadow = index === 0
+                ? '0 6px 24px rgba(239, 68, 68, 0.3)'
+                : '0 4px 16px rgba(59, 130, 246, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.boxShadow = index === 0
+                ? '0 4px 20px rgba(239, 68, 68, 0.2)'
+                : '0 2px 8px rgba(0, 0, 0, 0.2)';
             }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'start',
-                marginBottom: '8px'
+                marginBottom: '10px',
+                gap: '12px',
               }}>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
+                    fontSize: '17px',
+                    fontWeight: '700',
                     color: theme.colors.text.primary,
-                    marginBottom: '4px'
+                    marginBottom: '6px',
+                    lineHeight: '1.3',
                   }}>
-                    {index + 1}. {task.task}
+                    <span style={{
+                      display: 'inline-block',
+                      width: '26px',
+                      height: '26px',
+                      borderRadius: '50%',
+                      background: index === 0
+                        ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                        : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                      color: '#fff',
+                      textAlign: 'center',
+                      lineHeight: '26px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      marginRight: '10px',
+                    }}>
+                      {index + 1}
+                    </span>
+                    {task.task}
                   </div>
                   <div style={{
                     fontSize: '14px',
-                    color: theme.colors.text.secondary
+                    color: theme.colors.text.secondary,
+                    fontWeight: '500',
+                    marginLeft: '36px',
                   }}>
                     {task.course}
                   </div>
                 </div>
                 <div style={{
-                  backgroundColor: getUrgencyColor(parseInt(task.deadline.match(/\d+/)?.[0] || '14')),
-                  color: theme.colors.text.inverse,
-                  padding: '4px 12px',
-                  borderRadius: theme.borderRadius.pill,
+                  background: `linear-gradient(135deg, ${getUrgencyColor(parseInt(task.deadline.match(/\d+/)?.[0] || '14'))} 0%, ${getUrgencyColor(parseInt(task.deadline.match(/\d+/)?.[0] || '14'))}dd 100%)`,
+                  color: '#fff',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
                   fontSize: '12px',
-                  fontWeight: 'bold',
-                  whiteSpace: 'nowrap'
+                  fontWeight: '700',
+                  whiteSpace: 'nowrap',
+                  boxShadow: `0 4px 12px ${getUrgencyColor(parseInt(task.deadline.match(/\d+/)?.[0] || '14'))}40`,
                 }}>
                   {task.deadline}
                 </div>
@@ -339,7 +595,9 @@ export default function Dashboard() {
               <div style={{
                 fontSize: '14px',
                 color: theme.colors.text.secondary,
-                lineHeight: '1.5'
+                lineHeight: '1.6',
+                marginLeft: '36px',
+                fontWeight: '400',
               }}>
                 {task.reason}
               </div>
@@ -349,37 +607,67 @@ export default function Dashboard() {
 
         {/* Risks to Watch */}
         <div style={{
-          backgroundColor: theme.colors.bg.elevated,
-          padding: '30px',
-          borderRadius: theme.borderRadius.lg,
-          border: `1px solid ${theme.colors.border.primary}`
+          background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+          padding: '32px',
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(10px)',
+          animation: 'slideUp 0.6s ease-out 0.6s both',
         }}>
           <h2 style={{
             color: theme.colors.text.primary,
-            fontSize: '20px',
-            fontWeight: 'bold',
-            margin: '0 0 20px 0',
+            fontSize: '22px',
+            fontWeight: '800',
+            margin: '0 0 24px 0',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px'
+            gap: '12px',
+            letterSpacing: '-0.5px',
           }}>
             ⚠️ What to Watch Out For
           </h2>
 
           {analysis.risks.map((risk, index) => (
             <div key={index} style={{
-              backgroundColor: theme.colors.status.error,
-              padding: '16px',
-              borderRadius: theme.borderRadius.md,
-              marginBottom: '12px',
-              borderLeft: `4px solid ${theme.urgency.urgent}`
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)',
+              padding: '18px 20px',
+              borderRadius: '16px',
+              marginBottom: '14px',
+              borderLeft: '4px solid rgba(239, 68, 68, 0.6)',
+              boxShadow: '0 4px 16px rgba(239, 68, 68, 0.15)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(4px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.15)';
             }}>
               <div style={{
                 fontSize: '14px',
                 color: theme.colors.text.primary,
-                lineHeight: '1.5'
+                lineHeight: '1.6',
+                fontWeight: '500',
               }}>
-                <strong>Risk {index + 1}:</strong> {risk.replace(/^Risk \d+:\s*/, '')}
+                <span style={{
+                  display: 'inline-block',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  color: '#fff',
+                  textAlign: 'center',
+                  lineHeight: '24px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  marginRight: '10px',
+                }}>
+                  {index + 1}
+                </span>
+                {risk.replace(/^Risk \d+:\s*/, '')}
               </div>
             </div>
           ))}
@@ -388,46 +676,69 @@ export default function Dashboard() {
 
       {/* Recommendations */}
       <div style={{
-        backgroundColor: theme.colors.bg.elevated,
-        padding: '30px',
-        borderRadius: theme.borderRadius.lg,
-        marginBottom: '30px',
-        border: `1px solid ${theme.colors.border.primary}`
+        background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+        padding: '32px',
+        borderRadius: '24px',
+        marginBottom: '40px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(10px)',
+        animation: 'slideUp 0.6s ease-out 0.7s both',
       }}>
         <h2 style={{
           color: theme.colors.text.primary,
-          fontSize: '20px',
-          fontWeight: 'bold',
-          margin: '0 0 20px 0',
+          fontSize: '22px',
+          fontWeight: '800',
+          margin: '0 0 24px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '12px',
+          letterSpacing: '-0.5px',
         }}>
           ✅ Recommendations
         </h2>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {analysis.recommendations.map((rec, index) => (
             <div key={index} style={{
-              backgroundColor: theme.colors.bg.primary,
-              padding: '16px',
-              borderRadius: theme.borderRadius.md,
-              borderLeft: `4px solid ${theme.colors.success}`,
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)',
+              padding: '18px 20px',
+              borderRadius: '16px',
+              borderLeft: '4px solid rgba(16, 185, 129, 0.6)',
               display: 'flex',
-              gap: '12px'
+              gap: '16px',
+              boxShadow: '0 4px 16px rgba(16, 185, 129, 0.1)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(4px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.1)';
             }}>
               <div style={{
-                color: theme.colors.success,
-                fontSize: '20px',
-                fontWeight: 'bold'
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
               }}>
                 {index + 1}
               </div>
               <div style={{
-                fontSize: '14px',
+                fontSize: '15px',
                 color: theme.colors.text.primary,
-                lineHeight: '1.5',
-                flex: 1
+                lineHeight: '1.6',
+                flex: 1,
+                fontWeight: '400',
               }}>
                 {rec.replace(/^Action \d+:\s*/, '')}
               </div>
@@ -438,40 +749,62 @@ export default function Dashboard() {
 
       {/* Study Tips */}
       <div style={{
-        backgroundColor: theme.colors.bg.elevated,
-        padding: '30px',
-        borderRadius: theme.borderRadius.lg,
-        border: `1px solid ${theme.colors.border.primary}`
+        background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+        padding: '32px',
+        borderRadius: '24px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(10px)',
+        marginBottom: '40px',
+        animation: 'slideUp 0.6s ease-out 0.8s both',
       }}>
         <h2 style={{
           color: theme.colors.text.primary,
-          fontSize: '20px',
-          fontWeight: 'bold',
-          margin: '0 0 20px 0',
+          fontSize: '22px',
+          fontWeight: '800',
+          margin: '0 0 24px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '12px',
+          letterSpacing: '-0.5px',
         }}>
           💡 Study Tips
         </h2>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '12px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '16px',
         }}>
           {analysis.study_tips.map((tip, index) => (
             <div key={index} style={{
-              backgroundColor: theme.colors.bg.primary,
-              padding: '16px',
-              borderRadius: theme.borderRadius.md,
-              borderLeft: `4px solid ${theme.colors.info}`
+              background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(8, 145, 178, 0.05) 100%)',
+              padding: '18px 20px',
+              borderRadius: '16px',
+              borderLeft: '4px solid rgba(6, 182, 212, 0.6)',
+              boxShadow: '0 4px 16px rgba(6, 182, 212, 0.1)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(6, 182, 212, 0.1)';
             }}>
               <div style={{
                 fontSize: '14px',
                 color: theme.colors.text.primary,
-                lineHeight: '1.5'
+                lineHeight: '1.6',
+                fontWeight: '400',
               }}>
+                <span style={{
+                  fontSize: '18px',
+                  marginRight: '8px',
+                }}>
+                  💡
+                </span>
                 {tip.replace(/^Tip \d+:\s*/, '')}
               </div>
             </div>
@@ -481,89 +814,119 @@ export default function Dashboard() {
 
       {/* Course Load Overview */}
       <div style={{
-        backgroundColor: theme.colors.bg.elevated,
-        padding: '30px',
-        borderRadius: theme.borderRadius.lg,
-        border: `1px solid ${theme.colors.border.primary}`
+        background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.4) 0%, rgba(30, 30, 46, 0.2) 100%)',
+        padding: '32px',
+        borderRadius: '24px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(10px)',
+        marginBottom: '40px',
+        animation: 'slideUp 0.6s ease-out 0.9s both',
       }}>
         <h2 style={{
           color: theme.colors.text.primary,
-          fontSize: '20px',
-          fontWeight: 'bold',
-          margin: '0 0 20px 0'
+          fontSize: '22px',
+          fontWeight: '800',
+          margin: '0 0 24px 0',
+          letterSpacing: '-0.5px',
         }}>
           📚 Course Load Overview
         </h2>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '16px'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '20px',
         }}>
           {snapshot.courses.map((course, index) => (
             <div key={index} style={{
-              backgroundColor: theme.colors.bg.primary,
-              padding: '20px',
-              borderRadius: theme.borderRadius.md,
-              border: `1px solid ${theme.colors.border.primary}`
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+              padding: '24px',
+              borderRadius: '18px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-6px)';
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(59, 130, 246, 0.2)';
+              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'start',
-                marginBottom: '12px'
+                marginBottom: '14px',
+                gap: '12px',
               }}>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
+                    fontSize: '19px',
+                    fontWeight: '700',
                     color: theme.colors.text.primary,
-                    marginBottom: '4px'
+                    marginBottom: '6px',
                   }}>
                     {course.code}
                   </div>
                   <div style={{
                     fontSize: '14px',
-                    color: theme.colors.text.secondary
+                    color: theme.colors.text.secondary,
+                    fontWeight: '500',
+                    lineHeight: '1.4',
                   }}>
                     {course.name}
                   </div>
                 </div>
                 <div style={{
-                  backgroundColor: getLoadColor(course.load_estimate),
-                  color: theme.colors.text.inverse,
-                  padding: '4px 12px',
-                  borderRadius: theme.borderRadius.pill,
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase'
+                  background: `linear-gradient(135deg, ${getLoadColor(course.load_estimate)} 0%, ${getLoadColor(course.load_estimate)}dd 100%)`,
+                  color: '#fff',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  boxShadow: `0 4px 12px ${getLoadColor(course.load_estimate)}40`,
+                  flexShrink: 0,
                 }}>
                   {course.load_estimate}
                 </div>
               </div>
 
               <div style={{
-                fontSize: '14px',
+                fontSize: '13px',
                 color: theme.colors.text.secondary,
-                marginBottom: '12px'
+                marginBottom: '14px',
+                fontWeight: '500',
               }}>
                 {course.upcoming_count} upcoming {course.upcoming_count === 1 ? 'deadline' : 'deadlines'}
               </div>
 
               {course.upcoming.slice(0, 2).map((task, taskIndex) => (
                 <div key={taskIndex} style={{
-                  backgroundColor: theme.colors.bg.elevated,
-                  padding: '8px 12px',
-                  borderRadius: theme.borderRadius.sm,
-                  marginTop: '8px',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  marginTop: '10px',
                   fontSize: '13px',
-                  color: theme.colors.text.primary
+                  color: theme.colors.text.primary,
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}>
-                  <div style={{ fontWeight: 'bold' }}>{task.name}</div>
+                  <div style={{
+                    fontWeight: '600',
+                    marginBottom: '6px',
+                  }}>
+                    {task.name}
+                  </div>
                   <div style={{
                     color: getUrgencyColor(task.days_until),
                     fontSize: '12px',
-                    marginTop: '4px'
+                    fontWeight: '600',
                   }}>
                     Due in {task.days_until} {task.days_until === 1 ? 'day' : 'days'} • {task.weight}%
                   </div>
@@ -575,25 +938,32 @@ export default function Dashboard() {
       </div>
 
       {/* Refresh Button */}
-      <div style={{ textAlign: 'center', marginTop: '30px' }}>
+      <div style={{
+        textAlign: 'center',
+        marginTop: '30px',
+        animation: 'fadeIn 1s ease-in',
+      }}>
         <button
           onClick={fetchDashboardData}
           style={{
-            padding: '12px 24px',
-            backgroundColor: theme.colors.primary,
-            color: theme.colors.text.primary,
+            padding: '14px 36px',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            color: '#fff',
             border: 'none',
-            borderRadius: theme.borderRadius.md,
+            borderRadius: '14px',
             fontSize: '16px',
-            fontWeight: 'bold',
+            fontWeight: '700',
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#2563eb';
+            e.currentTarget.style.transform = 'translateY(-3px)';
+            e.currentTarget.style.boxShadow = '0 8px 30px rgba(59, 130, 246, 0.4)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = theme.colors.primary;
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 20px rgba(59, 130, 246, 0.3)';
           }}
         >
           🔄 Refresh Analysis
