@@ -1,30 +1,31 @@
-// Central theme configuration - Dark Mode
+// Central theme configuration - Sunzi Theme (Art of War)
 // Import this in components: import { theme } from '../theme';
 
 export const theme = {
-  // Dark Mode Colors
+  // Sunzi Brand Colors
   colors: {
-    primary: '#3b82f6',      // Bright Blue
+    primary: '#E67E22',      // Sunzi Orange - Main brand color
+    secondary: '#F39C12',    // Lighter Orange accent
     success: '#10b981',      // Emerald Green
     danger: '#ef4444',       // Red
     warning: '#f59e0b',      // Amber
     info: '#06b6d4',         // Cyan
     purple: '#8b5cf6',       // Purple accent
 
-    // Backgrounds
+    // Backgrounds - Darker, more premium
     bg: {
-      primary: '#0a0a0a',    // Main background - almost black
-      secondary: '#1a1a1a',  // Secondary background
-      elevated: '#2d2d2d',   // Cards, elevated surfaces
-      hover: '#3a3a3a',      // Hover states
-      active: '#404040',     // Active/pressed states
+      primary: '#000000',    // Pure black background
+      secondary: '#0f0f0f',  // Almost black
+      elevated: '#1a1a1a',   // Cards, elevated surfaces
+      hover: '#252525',      // Hover states
+      active: '#303030',     // Active/pressed states
     },
 
     // Borders
     border: {
-      primary: '#404040',    // Main borders
-      secondary: '#2d2d2d',  // Subtle borders
-      focus: '#3b82f6',      // Focus state
+      primary: '#2a2a2a',    // Main borders
+      secondary: '#1a1a1a',  // Subtle borders
+      focus: '#E67E22',      // Orange focus state
     },
 
     // Text colors
@@ -84,12 +85,13 @@ export const theme = {
     pill: '20px',
   },
 
-  // Shadows - Enhanced for dark mode
+  // Shadows - Enhanced for dark mode with orange glow
   shadows: {
-    sm: '0 2px 4px rgba(0,0,0,0.3)',
-    md: '0 4px 12px rgba(0,0,0,0.4)',
-    lg: '0 8px 24px rgba(0,0,0,0.5)',
-    glow: '0 0 20px rgba(59, 130, 246, 0.3)', // Blue glow
+    sm: '0 2px 4px rgba(0,0,0,0.5)',
+    md: '0 4px 12px rgba(0,0,0,0.6)',
+    lg: '0 8px 24px rgba(0,0,0,0.7)',
+    glow: '0 0 20px rgba(230, 126, 34, 0.3)', // Orange glow (Sunzi brand)
+    glowStrong: '0 0 30px rgba(230, 126, 34, 0.5)', // Stronger orange glow
   },
 
   // Urgency colors for deadlines - adjusted for dark mode

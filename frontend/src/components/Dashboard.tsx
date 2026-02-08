@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { theme } from '../theme';
 
+const API_BASE_URL = 'http://localhost:3001';
+
 interface UpcomingTask {
   name: string;
   type: string;
@@ -53,39 +55,33 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const abortController = new AbortController();
+    let isMounted = true;
 
     const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('http://localhost:3001/api/ai-advisor', {
-          signal: abortController.signal
-        });
+        console.log('🔄 Fetching AI advisor data...');
+        const response = await fetch(`${API_BASE_URL}/api/ai-advisor`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch AI advisor data');
         }
 
         const result = await response.json();
+        console.log('✅ AI advisor data received:', result.snapshot?.student_overview);
 
-        // Only update state if the request wasn't aborted
-        if (!abortController.signal.aborted) {
+        // Only update state if component is still mounted
+        if (isMounted) {
           setData(result);
+          console.log('✅ Data state updated successfully');
+          setLoading(false);
         }
       } catch (err) {
-        // Ignore abort errors
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.log('Request was cancelled');
-          return;
-        }
-        console.error('Error fetching dashboard data:', err);
-        if (!abortController.signal.aborted) {
+        console.error('❌ Error fetching dashboard data:', err);
+        if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        }
-      } finally {
-        if (!abortController.signal.aborted) {
           setLoading(false);
         }
       }
@@ -93,9 +89,9 @@ export default function Dashboard() {
 
     loadData();
 
-    // Cleanup function to abort the request if component unmounts
+    // Cleanup function - just mark component as unmounted
     return () => {
-      abortController.abort();
+      isMounted = false;
     };
   }, []);
 
@@ -104,16 +100,18 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:3001/api/ai-advisor');
+      console.log('🔄 Manual refresh: Fetching AI advisor data...');
+      const response = await fetch(`${API_BASE_URL}/api/ai-advisor`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch AI advisor data');
       }
 
       const result = await response.json();
+      console.log('✅ AI advisor data received:', result.snapshot?.student_overview);
       setData(result);
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
+      console.error('❌ Error fetching dashboard data:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setLoading(false);

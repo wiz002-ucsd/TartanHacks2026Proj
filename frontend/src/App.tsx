@@ -26,15 +26,15 @@ function App() {
 
   return (
     <div className="App">
-      {/* Navigation Bar */}
+      {/* Navigation Bar*/}
       <nav
         style={{
-          background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-          padding: '20px 0',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+          background: '#000000',
+          padding: '4px 0',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.8)',
           marginBottom: '0',
           backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+          borderBottom: '2px solid rgba(230, 126, 34, 0.3)',
         }}
       >
         <div
@@ -47,35 +47,52 @@ function App() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-            <h1
+            {/* Logo with Sunzi branding */}
+            <div
               style={{
-                margin: 0,
-                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontSize: '28px',
-                fontWeight: '800',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
                 cursor: 'pointer',
-                letterSpacing: '-0.5px',
                 transition: 'all 0.3s ease',
               }}
               onClick={() => setCurrentPage('home')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.filter = 'drop-shadow(0 0 10px rgba(230, 126, 34, 0.5))';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.filter = 'none';
               }}
             >
-              Sunzi
-            </h1>
+              <img
+                src="/sunzi-logo.png"
+                alt="Sunzi Logo"
+                style={{
+                  height: '100px',
+                  width: 'auto',
+                }}
+              />
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: '32px',
+                  fontWeight: '300',
+                  color: '#FFFFFF',
+                  letterSpacing: '2px',
+                  fontFamily: 'Georgia, serif',
+                }}
+              >
+                Sunzi
+              </h1>
+            </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => setCurrentPage('home')}
                 style={{
                   padding: '10px 24px',
-                  background: currentPage === 'home' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  background: currentPage === 'home' ? 'linear-gradient(135deg, #E67E22 0%, #D35400 100%)' : 'rgba(255, 255, 255, 0.03)',
                   color: '#e5e5e5',
                   border: currentPage === 'home' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '10px',
@@ -83,13 +100,13 @@ function App() {
                   fontWeight: currentPage === 'home' ? '600' : '500',
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: currentPage === 'home' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
+                  boxShadow: currentPage === 'home' ? '0 4px 15px rgba(230, 126, 34, 0.5)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'home') {
                     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(230, 126, 34, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -106,7 +123,7 @@ function App() {
                 onClick={() => setCurrentPage('dashboard')}
                 style={{
                   padding: '10px 24px',
-                  background: currentPage === 'dashboard' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  background: currentPage === 'dashboard' ? 'linear-gradient(135deg, #E67E22 0%, #D35400 100%)' : 'rgba(255, 255, 255, 0.03)',
                   color: '#e5e5e5',
                   border: currentPage === 'dashboard' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '10px',
@@ -114,13 +131,13 @@ function App() {
                   fontWeight: currentPage === 'dashboard' ? '600' : '500',
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: currentPage === 'dashboard' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
+                  boxShadow: currentPage === 'dashboard' ? '0 4px 15px rgba(230, 126, 34, 0.5)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'dashboard') {
                     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(230, 126, 34, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -137,7 +154,7 @@ function App() {
                 onClick={() => setCurrentPage('upload')}
                 style={{
                   padding: '10px 24px',
-                  background: currentPage === 'upload' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  background: currentPage === 'upload' ? 'linear-gradient(135deg, #E67E22 0%, #D35400 100%)' : 'rgba(255, 255, 255, 0.03)',
                   color: '#e5e5e5',
                   border: currentPage === 'upload' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '10px',
@@ -145,13 +162,13 @@ function App() {
                   fontWeight: currentPage === 'upload' ? '600' : '500',
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: currentPage === 'upload' ? '0 4px 15px rgba(59, 130, 246, 0.4)' : 'none',
+                  boxShadow: currentPage === 'upload' ? '0 4px 15px rgba(230, 126, 34, 0.5)' : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (currentPage !== 'upload') {
                     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(230, 126, 34, 0.5)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -172,7 +189,7 @@ function App() {
       {/* Page Content */}
       <div style={{
         minHeight: 'calc(100vh - 70px)',
-        background: 'linear-gradient(180deg, #0a0a0a 0%, #0f0f1e 100%)',
+        background: '#000000',
       }}>
         {currentPage === 'home' && (
           <Home
