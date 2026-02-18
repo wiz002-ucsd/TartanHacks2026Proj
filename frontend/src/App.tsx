@@ -3,11 +3,12 @@ import Home from './components/Home';
 import SyllabusUpload from './components/SyllabusUpload';
 import CourseDetail from './components/CourseDetail';
 import Dashboard from './components/Dashboard';
+import LandingPage from './LandingPage';
 
-type Page = 'home' | 'upload' | 'detail' | 'dashboard';
+type Page = 'landing' | 'home' | 'upload' | 'detail' | 'dashboard';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const [homeRefreshKey, setHomeRefreshKey] = useState(0);
 
@@ -23,6 +24,13 @@ function App() {
       setHomeRefreshKey(prev => prev + 1);
     }
   };
+
+  /* ── Landing page renders with its own nav — bypass app shell ── */
+  if (currentPage === 'landing') {
+    return (
+      <LandingPage onGetStarted={() => setCurrentPage('home')} />
+    );
+  }
 
   return (
     <div className="App">
