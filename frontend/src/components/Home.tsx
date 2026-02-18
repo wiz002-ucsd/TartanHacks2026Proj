@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { CoursesResponse, CourseWithDeadline } from '../types/syllabus';
 
 // Backend API base URL
@@ -80,16 +80,6 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
     return '#10b981'; // Green - future
   };
 
-  // Get event type emoji
-  const getEventTypeEmoji = (type: string) => {
-    switch (type) {
-      case 'homework': return '📝';
-      case 'test': return '📋';
-      case 'project': return '🚀';
-      case 'quiz': return '❓';
-      default: return '📌';
-    }
-  };
 
   return (
     <div style={{

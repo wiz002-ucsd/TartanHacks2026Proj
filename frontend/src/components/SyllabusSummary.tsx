@@ -1,4 +1,3 @@
-import React from 'react';
 import type { SyllabusData, Event } from '../types/syllabus';
 
 interface SyllabusSummaryProps {

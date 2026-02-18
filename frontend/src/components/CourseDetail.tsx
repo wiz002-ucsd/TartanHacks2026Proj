@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ConfirmDialog from './ConfirmDialog';
 import LectureRoadmap from './LectureRoadmap';
 
@@ -251,7 +251,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
         animation: 'fadeIn 0.5s ease-in',
       }}>
         <button
-          onClick={onBack}
+          onClick={() => onBack()}
           style={{
             padding: '12px 24px',
             background: 'rgba(59, 130, 246, 0.1)',
@@ -303,12 +303,6 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
     project: null,
     quizzes: null,
   };
-  const policies = course.course_policies ?? {
-    late_days_total: null,
-    late_days_per_hw: null,
-    genai_allowed: null,
-    genai_notes: null,
-  };
   const upcomingEvents = getUpcomingEvents();
   const gradingItems = [
     { label: 'Homework', value: grading.homework, color: '#3b82f6' },
@@ -349,7 +343,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
         animation: 'slideUp 0.5s ease-out',
       }}>
         <button
-          onClick={onBack}
+          onClick={() => onBack()}
           style={{
             padding: '12px 24px',
             background: 'rgba(59, 130, 246, 0.1)',
