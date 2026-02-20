@@ -25,15 +25,8 @@
 "use client"; // Next.js App Router directive — no-op in Vite
 
 import { useState } from "react";
-
-// ─────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────
-
-interface LandingPageProps {
-  /** Called when any primary CTA is clicked — wire to your auth/signup flow */
-  onGetStarted?: () => void;
-}
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
 
 // ─────────────────────────────────────────────────────────────
 // INLINE SVG ICONS  (zero dependency — swap for lucide-react later)
@@ -1143,10 +1136,14 @@ const Footer = () => (
 // Vite:    import LandingPage from './LandingPage' → pass onGetStarted prop
 // ─────────────────────────────────────────────────────────────
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const handleGetStarted = () => {
     // ANALYTICS: track('cta_clicked', { source: 'landing_page', timestamp: Date.now() })
-    if (onGetStarted) onGetStarted();
+    login();
+    navigate('/home');
   };
 
   return (

@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { CoursesResponse, CourseWithDeadline } from '../types/syllabus';
 
 // Backend API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
-interface HomeProps {
-  onNavigateToUpload: () => void;
-  onNavigateToCourse: (courseId: number) => void;
-}
-
-export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomeProps) {
+export default function Home() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [courses, setCourses] = useState<CourseWithDeadline[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +16,14 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // Handle refresh after upload success
+  useEffect(() => {
+    if (location.state?.refresh) {
+      fetchCourses();
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   const fetchCourses = async () => {
     setIsLoading(true);
@@ -140,7 +146,7 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
           </p>
         </div>
         <button
-          onClick={onNavigateToUpload}
+          onClick={() => navigate('/upload')}
           style={{
             padding: '14px 28px',
             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -255,7 +261,7 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
             Upload your first syllabus to get started with your academic journey!
           </p>
           <button
-            onClick={onNavigateToUpload}
+            onClick={() => navigate('/upload')}
             style={{
               padding: '14px 32px',
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -293,7 +299,7 @@ export default function Home({ onNavigateToUpload, onNavigateToCourse }: HomePro
           {courses.map((course, index) => (
             <div
               key={course.id}
-              onClick={() => onNavigateToCourse(course.id)}
+              onClick={() => navigate(`/courses/${course.id}`)}
               style={{
                 background: 'linear-gradient(135deg, rgba(45, 45, 61, 0.6) 0%, rgba(30, 30, 46, 0.4) 100%)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',

@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import ConfirmDialog from './ConfirmDialog';
 import LectureRoadmap from './LectureRoadmap';
 
 // Backend API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-
-interface CourseDetailProps {
-  courseId: number;
-  onBack: (shouldRefresh?: boolean) => void;
-}
 
 interface Event {
   id: number;
@@ -56,7 +52,10 @@ interface CourseData {
   } | null;
 }
 
-export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
+export default function CourseDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const courseId = Number(id);
   const [course, setCourse] = useState<CourseData | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +120,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
       if (data.success) {
         // Navigate back to home and refresh the course list
         setShowDeleteConfirm(false);
-        onBack(true);
+        navigate('/home', { state: { refresh: true } });
       } else {
         setError(data.error || 'Failed to delete course');
         setShowDeleteConfirm(false);
@@ -184,6 +183,10 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
   const formatPercent = (value: number | null) => {
     return value !== null ? `${value}%` : 'N/A';
   };
+
+  if (isNaN(courseId)) {
+    return <Navigate to="/home" replace />;
+  }
 
   if (isLoading) {
     return (
@@ -251,7 +254,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
         animation: 'fadeIn 0.5s ease-in',
       }}>
         <button
-          onClick={() => onBack()}
+          onClick={() => navigate('/home')}
           style={{
             padding: '12px 24px',
             background: 'rgba(59, 130, 246, 0.1)',
@@ -343,7 +346,7 @@ export default function CourseDetail({ courseId, onBack }: CourseDetailProps) {
         animation: 'slideUp 0.5s ease-out',
       }}>
         <button
-          onClick={() => onBack()}
+          onClick={() => navigate('/home')}
           style={{
             padding: '12px 24px',
             background: 'rgba(59, 130, 246, 0.1)',
