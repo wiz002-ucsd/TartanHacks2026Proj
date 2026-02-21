@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { UploadResponse } from '../types/syllabus';
 import SyllabusSummary from './SyllabusSummary';
 
 // Backend API base URL (configure in .env)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
-interface SyllabusUploadProps {
-  onSuccessfulUpload?: () => void;
-}
-
-export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadProps) {
+export default function SyllabusUpload() {
+  const navigate = useNavigate();
   const [syllabusText, setSyllabusText] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadMode, setUploadMode] = useState<'text' | 'file'>('file');
@@ -77,12 +75,10 @@ export default function SyllabusUpload({ onSuccessfulUpload }: SyllabusUploadPro
         const fileInput = document.getElementById('file-upload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
 
-        // Notify parent component after a short delay to show success
-        if (onSuccessfulUpload) {
-          setTimeout(() => {
-            onSuccessfulUpload();
-          }, 3000); // Give user 3 seconds to see the success message
-        }
+        // Navigate to home after a short delay to show success
+        setTimeout(() => {
+          navigate('/home', { state: { refresh: true } });
+        }, 3000); // Give user 3 seconds to see the success message
       } else {
         console.error('✗ Upload failed:', data.error);
       }
