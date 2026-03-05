@@ -1,105 +1,124 @@
 // Central theme configuration - Sunzi Theme (Art of War)
+// "Modern yet Academic" — Crimson Pro serif headings, refined dark palette
 // Import this in components: import { theme } from '../theme';
 
 export const theme = {
-  // Sunzi Brand Colors
+  // Sunzi Brand Colors — warm, authoritative, academic
   colors: {
-    primary: '#E67E22',      // Sunzi Orange - Main brand color
-    secondary: '#F39C12',    // Lighter Orange accent
-    success: '#10b981',      // Emerald Green
-    danger: '#ef4444',       // Red
-    warning: '#f59e0b',      // Amber
-    info: '#06b6d4',         // Cyan
-    purple: '#8b5cf6',       // Purple accent
+    primary:   '#E67E22',   // Sunzi Orange — main brand color
+    secondary: '#F59E0B',   // Warm amber accent
+    gold:      '#D4A853',   // Academic gold (used for subtle accents)
+    success:   '#10b981',   // Emerald green
+    danger:    '#ef4444',   // Red
+    warning:   '#f59e0b',   // Amber
+    info:      '#06b6d4',   // Cyan
+    purple:    '#8b5cf6',   // Purple accent
 
-    // Backgrounds - Darker, more premium
+    // Backgrounds — very dark, warm-tinted black
     bg: {
-      primary: '#000000',    // Pure black background
-      secondary: '#0f0f0f',  // Almost black
-      elevated: '#1a1a1a',   // Cards, elevated surfaces
-      hover: '#252525',      // Hover states
-      active: '#303030',     // Active/pressed states
+      primary:  '#000000',  // Pure black
+      secondary: '#050505', // Near-black
+      elevated:  '#0a0a0a', // Card surfaces
+      card:      '#111111', // Elevated cards
+      hover:     '#161616', // Hover states
+      glass:     'rgba(255, 255, 255, 0.03)', // Glass surface
     },
 
-    // Borders
+    // Borders — subtle warm tones
     border: {
-      primary: '#2a2a2a',    // Main borders
-      secondary: '#1a1a1a',  // Subtle borders
-      focus: '#E67E22',      // Orange focus state
+      primary:   'rgba(255, 255, 255, 0.07)',  // Main borders
+      secondary: 'rgba(255, 255, 255, 0.04)',  // Subtle borders
+      accent:    'rgba(230, 126, 34, 0.2)',    // Orange-tinted borders
+      focus:     '#E67E22',                    // Focus ring
     },
 
-    // Text colors
+    // Text — warm off-white for legibility
     text: {
-      primary: '#e5e5e5',    // Main text
-      secondary: '#a3a3a3',  // Secondary text
-      tertiary: '#737373',   // Tertiary/muted text
-      inverse: '#0a0a0a',    // Text on light backgrounds
+      primary:   '#F0EDE8',  // Warm off-white (not cold gray)
+      secondary: '#9A9490',  // Warm medium gray
+      tertiary:  '#5A5652',  // Muted warm gray
+      inverse:   '#0A0A0A',  // Text on light backgrounds
     },
 
     // Status backgrounds
     status: {
-      success: '#065f46',    // Dark green background
-      error: '#7f1d1d',      // Dark red background
-      warning: '#78350f',    // Dark amber background
-      info: '#0c4a6e',       // Dark blue background
+      success: '#065f46',
+      error:   '#7f1d1d',
+      warning: '#78350f',
+      info:    '#0c4a6e',
     },
   },
 
-  // Typography
+  // Typography — Crimson Pro for display/headings, Inter for body
   typography: {
     fontFamily: {
-      primary: '"Inter", "Helvetica Neue", Arial, sans-serif',
-      monospace: 'Consolas, Monaco, monospace',
+      display:   '"Crimson Pro", Georgia, "Times New Roman", serif',
+      primary:   '"Inter", "Helvetica Neue", Arial, sans-serif',
+      monospace: 'Consolas, Monaco, "Courier New", monospace',
     },
     fontSize: {
-      xs: '12px',
-      sm: '14px',
-      base: '16px',
-      lg: '18px',
-      xl: '24px',
-      xxl: '32px',
+      xs:    '12px',
+      sm:    '14px',
+      base:  '16px',
+      lg:    '18px',
+      xl:    '24px',
+      xxl:   '32px',
+      xxxl:  '48px',
+      hero:  '72px',
     },
-    fontWeight: {
-      normal: 'normal',
-      medium: '500',
-      bold: 'bold',
+    lineHeight: {
+      tight:   '1.1',
+      snug:    '1.3',
+      normal:  '1.6',
+      relaxed: '1.75',
     },
   },
 
   // Spacing
   spacing: {
-    xs: '4px',
-    sm: '8px',
-    md: '12px',
-    lg: '20px',
-    xl: '30px',
-    xxl: '40px',
+    xs:  '4px',
+    sm:  '8px',
+    md:  '12px',
+    lg:  '20px',
+    xl:  '32px',
+    xxl: '48px',
   },
 
   // Border radius
   borderRadius: {
-    sm: '4px',
-    md: '6px',
-    lg: '8px',
-    xl: '12px',
-    pill: '20px',
+    sm:  '6px',
+    md:  '10px',
+    lg:  '16px',
+    xl:  '20px',
+    xxl: '28px',
+    pill: '999px',
   },
 
-  // Shadows - Enhanced for dark mode with orange glow
+  // Shadows — warm, orange-tinted for brand elements
   shadows: {
-    sm: '0 2px 4px rgba(0,0,0,0.5)',
-    md: '0 4px 12px rgba(0,0,0,0.6)',
-    lg: '0 8px 24px rgba(0,0,0,0.7)',
-    glow: '0 0 20px rgba(230, 126, 34, 0.3)', // Orange glow (Sunzi brand)
-    glowStrong: '0 0 30px rgba(230, 126, 34, 0.5)', // Stronger orange glow
+    sm:         '0 2px 8px rgba(0,0,0,0.5)',
+    md:         '0 4px 16px rgba(0,0,0,0.6)',
+    lg:         '0 8px 32px rgba(0,0,0,0.7)',
+    glow:       '0 0 24px rgba(230, 126, 34, 0.3)',
+    glowStrong: '0 0 40px rgba(230, 126, 34, 0.5)',
+    card:       '0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3)',
   },
 
-  // Urgency colors for deadlines - adjusted for dark mode
+  // Urgency colors for deadlines
   urgency: {
-    urgent: '#ef4444',     // Red - 0-1 days
-    soon: '#f59e0b',       // Amber - 2-3 days
-    upcoming: '#06b6d4',   // Cyan - 4-7 days
-    future: '#10b981',     // Green - 8+ days
+    urgent:   '#ef4444',  // Red  — 0–1 days
+    soon:     '#f59e0b',  // Amber — 2–3 days
+    upcoming: '#06b6d4',  // Cyan  — 4–7 days
+    future:   '#10b981',  // Green — 8+ days
+  },
+
+  // Animation tokens
+  animation: {
+    fast:   '150ms',
+    normal: '250ms',
+    slow:   '400ms',
+    easeOut:    'cubic-bezier(0.22, 1, 0.36, 1)',
+    easeInOut:  'cubic-bezier(0.4, 0, 0.2, 1)',
   },
 };
 

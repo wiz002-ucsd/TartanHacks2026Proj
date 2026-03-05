@@ -2,43 +2,56 @@
 <html lang="en">
   <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Crimson Pro (academic serif) + Inter (modern sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sunzi — AI-Powered Academic Assistant</title>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
-            colors: {
-              'sunzi-orange':       '#E67E22',
-              'sunzi-orange-light': '#F39C12',
-              'sunzi-green':        '#10b981',
-              'bg-primary':         '#000000',
-              'bg-secondary':       '#0a0a0a',
-              'bg-elevated':        '#0f0f0f',
-              'bg-card':            '#1a1a1a',
-              'bg-hover':           '#252525',
-              'border-subtle':      '#1a1a1a',
-              'border-mid':         '#2a2a2a',
-              'text-primary':       '#e5e5e5',
-              'text-secondary':     '#a3a3a3',
-              'text-muted':         '#737373',
-            },
             fontFamily: {
-              sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+              sans:  ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+              serif: ['Crimson Pro', 'Georgia', 'Times New Roman', 'serif'],
+            },
+            colors: {
+              'sunzi-orange':  '#E67E22',
+              'sunzi-amber':   '#D4A853',
+              'sunzi-green':   '#10b981',
+              'bg-primary':    '#000000',
+              'bg-secondary':  '#050505',
+              'bg-elevated':   '#0a0a0a',
+              'text-warm':     '#F0EDE8',
+              'text-mid':      '#9A9490',
+              'text-muted':    '#5A5652',
+              'border-dim':    '#141414',
+              'border-mid':    '#222222',
             },
             animation: {
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float':         'float 7s ease-in-out infinite',
+              'float-slow':    'float 10s ease-in-out infinite',
+              'pulse-orange':  'pulse-orange 3s ease-in-out infinite',
+              'spin-slow':     'spin 12s linear infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%':      { transform: 'translateY(-10px)' },
+              },
+              'pulse-orange': {
+                '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
+                '50%':      { opacity: '0.8', transform: 'scale(1.04)' },
+              },
             },
           },
         },
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-Czo6vlEp.js"></script>
+    <script type="module" crossorigin src="/assets/index-D4UEe6AD.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-BRpks1yC.css">
   </head>
   <body class="bg-black font-sans antialiased">
@@ -46,17 +59,122 @@
   </body>
 </html>
 <style>
+  /* ── Font rendering ── */
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  /* Smooth scroll */
-  html { scroll-behavior: smooth; }
+  .font-serif {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
 
-  /* Thin custom scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+  /* ── Scroll ── */
+  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 2px; }
   ::-webkit-scrollbar-thumb:hover { background: #E67E22; }
+
+  /* ════════════════════════════════════════════════════
+     APPLE-STYLE SCROLL REVEAL SYSTEM
+     Elements start at scale(0.94) + translateY(24px) + opacity(0)
+     and transition to scale(1) + translateY(0) + opacity(1)
+     Duration: 900ms — slower and more deliberate than typical
+     Easing: Apple's signature deceleration curve
+  ════════════════════════════════════════════════════ */
+  .reveal {
+    opacity: 0;
+    transform: scale(0.94) translateY(24px);
+    transition:
+      opacity  0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* Stagger delays — for child elements in a grid */
+  .reveal-d1 { transition-delay: 0.05s; }
+  .reveal-d2 { transition-delay: 0.12s; }
+  .reveal-d3 { transition-delay: 0.19s; }
+  .reveal-d4 { transition-delay: 0.26s; }
+
+  /* Fade-only reveal — for text blocks that shouldn't scale */
+  .reveal-fade {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity  0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+  }
+  .reveal-fade.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hero line stagger — each line fades up independently */
+  .hero-line {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity  0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .hero-line.is-visible { opacity: 1; transform: translateY(0); }
+  .hero-line-d1 { transition-delay: 0.1s; }
+  .hero-line-d2 { transition-delay: 0.22s; }
+  .hero-line-d3 { transition-delay: 0.34s; }
+  .hero-line-d4 { transition-delay: 0.48s; }
+  .hero-line-d5 { transition-delay: 0.62s; }
+
+  /* ── Dot grid background ── */
+  .dot-grid {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+
+  /* ── Step panel fade (sticky how-it-works) ── */
+  .step-panel {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity  0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .step-panel.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* ── Stats counter ── */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .stat-item.is-visible .stat-value {
+    animation: countUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stat-item.is-visible .stat-value:nth-child(1) { animation-delay: 0s; }
+  .stat-item.is-visible .stat-value:nth-child(2) { animation-delay: 0.1s; }
+  .stat-item.is-visible .stat-value:nth-child(3) { animation-delay: 0.2s; }
+
+  /* ── Respect reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-fade, .hero-line, .step-panel {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
 </style>
