@@ -1,4 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { theme } from '../theme';
 
 // ── SVG icons (inline, no dependency) ──────────────────────
@@ -13,6 +14,7 @@ const BookIcon = () => (
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
 
   const currentPath = location.pathname;
 

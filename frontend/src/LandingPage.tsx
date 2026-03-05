@@ -105,7 +105,13 @@ const QuoteIcon    = ({ className = "" }: { className?: string }) => (
 
 const NAV_LINKS = ["Features", "How It Works", "Pricing"];
 
-const Navigation = ({ onGetStarted }: { onGetStarted: () => void }) => {
+const Navigation = ({
+  onGetStarted,
+  onLogin,
+}: {
+  onGetStarted: () => void;
+  onLogin: () => void;
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -153,7 +159,7 @@ const Navigation = ({ onGetStarted }: { onGetStarted: () => void }) => {
                 {label}
               </button>
             ))}
-            <button className="text-[#9A9490] hover:text-[#F0EDE8] text-sm font-medium transition-colors duration-200 cursor-pointer">
+            <button onClick={onLogin} className="text-[#a3a3a3] hover:text-white text-sm font-medium transition-colors duration-200">
               Login
             </button>
           </div>
@@ -184,7 +190,7 @@ const Navigation = ({ onGetStarted }: { onGetStarted: () => void }) => {
       {menuOpen && (
         <div className="md:hidden border-t border-white/[0.06] bg-black/98 backdrop-blur-2xl">
           <div className="px-6 py-5 space-y-4">
-            {[...NAV_LINKS, "Login"].map((label) => (
+            {NAV_LINKS.map((label) => (
               <button
                 key={label}
                 onClick={() => scrollTo(label.toLowerCase().replace(/ /g, "-"))}
@@ -193,6 +199,12 @@ const Navigation = ({ onGetStarted }: { onGetStarted: () => void }) => {
                 {label}
               </button>
             ))}
+            <button
+              onClick={onLogin}
+              className="block text-left w-full text-[#a3a3a3] hover:text-white text-sm font-medium py-1 transition-colors"
+            >
+              Login
+            </button>
             <button
               onClick={onGetStarted}
               className="w-full bg-[#E67E22] hover:bg-[#F39C12] text-black font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200 mt-2 cursor-pointer"
@@ -1227,7 +1239,7 @@ const Footer = () => (
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // ── 1. Scale-based scroll reveal (IntersectionObserver) ──
@@ -1268,13 +1280,21 @@ export default function LandingPage() {
   }, []);
 
   const handleGetStarted = () => {
-    login();
-    navigate("/home");
+    // ANALYTICS: track('cta_clicked', { source: 'landing_page', timestamp: Date.now() })
+    navigate(isAuthenticated ? '/home' : '/login');
+  };
+
+  const handleLogin = () => {
+    navigate(isAuthenticated ? '/home' : '/login');
   };
 
   return (
     <div className="bg-black min-h-screen font-sans">
-      <Navigation onGetStarted={handleGetStarted} />
+
+      {/* ① Navigation */}
+      <Navigation onGetStarted={handleGetStarted} onLogin={handleLogin} />
+
+      {/* ② Hero */}
       <Hero onGetStarted={handleGetStarted} />
       <StatsBar />
       <ProblemFraming />
