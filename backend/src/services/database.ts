@@ -1,252 +1,119 @@
-import 'dotenv/config'; // Load environment variables first
+import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
-import type { SyllabusData } from '../types/syllabus';
+import { NormalizedTopic, CourseDeadline } from '../models/types';
 
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error('SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/**
- * Stores validated syllabus data into Supabase database
- *
- * This function performs a transactional insert across 4 tables:
- * 1. courses
- * 2. grading_policies
- * 3. events (multiple rows)
- * 4. course_policies
- *
- * @param data - Validated syllabus data from LLM
- * @returns The created course ID
- * @throws Error if any database operation fails
- */
-export async function storeSyllabusData(
-  data: SyllabusData
-): Promise<number> {
-  try {
-    // Step 1: Insert course record
-    const { data: courseData, error: courseError } = await supabase
-      .from('courses')
-      .insert({
-        name: data.course.name,
-        code: data.course.code,
-        term: data.course.term,
-        units: data.course.units,
-      })
-      .select('id')
-      .single();
+// Hardcoded dev user until real Supabase Auth is integrated
+export const DEV_USER_ID = '00000000-0000-0000-0000-000000000001';
 
-    if (courseError || !courseData) {
-      console.error('Failed to insert course:', courseError);
-      throw new Error(`Database error: ${courseError?.message || 'Unknown error'}`);
-    }
-
-    const courseId = courseData.id;
-    console.log(`✓ Inserted course with ID: ${courseId}`);
-
-    // Step 2: Insert grading policy
-    const { error: gradingError } = await supabase
-      .from('grading_policies')
-      .insert({
-        course_id: courseId,
-        homework: data.grading.homework,
-        tests: data.grading.tests,
-        project: data.grading.project,
-        quizzes: data.grading.quizzes,
-      });
-
-    if (gradingError) {
-      console.error('Failed to insert grading policy:', gradingError);
-      throw new Error(`Database error: ${gradingError.message}`);
-    }
-
-    console.log('✓ Inserted grading policy');
-
-    // Step 3: Insert events (if any exist)
-    if (data.events.length > 0) {
-      const eventsToInsert = data.events.map((event) => ({
-        course_id: courseId,
-        type: event.type,
-        name: event.name,
-        release_date: event.release_date,
-        due_date: event.due_date,
-        weight: event.weight,
-      }));
-
-      const { error: eventsError } = await supabase
-        .from('events')
-        .insert(eventsToInsert);
-
-      if (eventsError) {
-        console.error('Failed to insert events:', eventsError);
-        throw new Error(`Database error: ${eventsError.message}`);
-      }
-
-      console.log(`✓ Inserted ${data.events.length} events`);
-    } else {
-      console.log('No events to insert');
-    }
-
-    // Step 4: Insert lectures (if any exist)
-    if (data.lectures.length > 0) {
-      const lecturesToInsert = data.lectures.map((lecture) => ({
-        course_id: courseId,
-        lecture_number: lecture.lecture_number,
-        title: lecture.title,
-        date: lecture.date,
-        topics: lecture.topics,
-        description: lecture.description,
-      }));
-
-      const { error: lecturesError } = await supabase
-        .from('lectures')
-        .insert(lecturesToInsert);
-
-      if (lecturesError) {
-        console.error('Failed to insert lectures:', lecturesError);
-        throw new Error(`Database error: ${lecturesError.message}`);
-      }
-
-      console.log(`✓ Inserted ${data.lectures.length} lectures`);
-    } else {
-      console.log('No lectures to insert');
-    }
-
-    // Step 5: Insert course policies
-    const { error: policiesError } = await supabase
-      .from('course_policies')
-      .insert({
-        course_id: courseId,
-        late_days_total: data.policies.late_days_total,
-        late_days_per_hw: data.policies.late_days_per_hw,
-        genai_allowed: data.policies.genai_allowed,
-        genai_notes: data.policies.genai_notes,
-      });
-
-    if (policiesError) {
-      console.error('Failed to insert policies:', policiesError);
-      throw new Error(`Database error: ${policiesError.message}`);
-    }
-
-    console.log('✓ Inserted course policies');
-    console.log(`✓ Successfully stored all syllabus data for course ID: ${courseId}`);
-
-    return courseId;
-
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Database storage failed:', error.message);
-      throw new Error(`Failed to store syllabus data: ${error.message}`);
-    }
-    throw error;
-  }
-}
-
-/**
- * Retrieves full course data including all related tables
- *
- * @param courseId - The course ID to fetch
- * @returns Complete course data with grading, events, and policies
- */
-export async function getCourseData(courseId: number) {
-  const { data: course, error: courseError } = await supabase
+export async function getAllCoursesForUser(userId: string) {
+  const { data, error } = await supabase
     .from('courses')
     .select(`
-      *,
-      grading_policies(*),
-      events(*),
-      lectures(*),
-      course_policies(*)
+      id, course_name, course_code, semester, created_at,
+      course_deadlines(id, title, type, due_date)
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function getCourseWithTopics(courseId: number) {
+  const { data, error } = await supabase
+    .from('courses')
+    .select(`
+      id, course_name, course_code, semester, created_at,
+      course_topics(
+        id, display_name, global_topic_id,
+        global_topics(id, canonical_name)
+      ),
+      course_deadlines(id, title, type, due_date)
     `)
     .eq('id', courseId)
     .single();
-
-  if (courseError) {
-    throw new Error(`Failed to fetch course: ${courseError.message}`);
-  }
-
-  // Transform array fields to single objects since there's only one per course
-  const transformedCourse = {
-    ...course,
-    grading_policies: Array.isArray(course.grading_policies) && course.grading_policies.length > 0
-      ? course.grading_policies[0]
-      : null,
-    course_policies: Array.isArray(course.course_policies) && course.course_policies.length > 0
-      ? course.course_policies[0]
-      : null,
-  };
-
-  return transformedCourse;
+  if (error) throw error;
+  return data;
 }
 
-/**
- * Retrieves all courses with their next upcoming deadline
- *
- * @returns Array of courses with basic info and next upcoming event
- */
-export async function getAllCoursesWithUpcomingDeadlines() {
-  try {
-    // Fetch all courses
-    const { data: courses, error: coursesError } = await supabase
-      .from('courses')
-      .select('id, name, code, term')
-      .order('created_at', { ascending: false });
+export async function createCourse(
+  userId: string,
+  courseName: string,
+  courseCode: string | null,
+  semester: string
+): Promise<number> {
+  const { data, error } = await supabase
+    .from('courses')
+    .insert({ user_id: userId, course_name: courseName, course_code: courseCode, semester })
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data.id;
+}
 
-    if (coursesError) {
-      throw new Error(`Failed to fetch courses: ${coursesError.message}`);
-    }
+export async function insertCourseTopics(
+  courseId: number,
+  normalizedTopics: NormalizedTopic[]
+): Promise<void> {
+  if (normalizedTopics.length === 0) return;
+  const rows = normalizedTopics.map((t) => ({
+    course_id: courseId,
+    global_topic_id: t.global_topic_id,
+    display_name: t.display_name,
+  }));
+  const { error } = await supabase.from('course_topics').insert(rows);
+  if (error) throw error;
+}
 
-    if (!courses || courses.length === 0) {
-      return [];
-    }
+export async function insertDeadlines(
+  courseId: number,
+  deadlines: Array<Pick<CourseDeadline, 'title' | 'type' | 'due_date'>>
+): Promise<void> {
+  if (deadlines.length === 0) return;
+  const rows = deadlines.map((d) => ({ ...d, course_id: courseId }));
+  const { error } = await supabase.from('course_deadlines').insert(rows);
+  if (error) throw error;
+}
 
-    // For each course, find the next upcoming deadline
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+export async function deleteCourse(courseId: number): Promise<void> {
+  const { error } = await supabase.from('courses').delete().eq('id', courseId);
+  if (error) throw error;
+}
 
-    const coursesWithDeadlines = await Promise.all(
-      courses.map(async (course) => {
-        // Get all future events for this course, ordered by due_date
-        const { data: events, error: eventsError } = await supabase
-          .from('events')
-          .select('name, type, due_date, release_date')
-          .eq('course_id', course.id)
-          .gte('due_date', today) // Only future events
-          .order('due_date', { ascending: true })
-          .limit(1); // Get only the next upcoming one
+export async function getMasteryForUser(userId: string) {
+  const { data, error } = await supabase
+    .from('user_global_topic_mastery')
+    .select(`
+      user_id, global_topic_id, mastery_score, last_practiced_at,
+      total_attempts, threshold_reached_date,
+      global_topics(canonical_name, topic_aggregate_stats(difficulty_score))
+    `)
+    .eq('user_id', userId);
+  if (error) throw error;
+  return data ?? [];
+}
 
-        if (eventsError) {
-          console.error(`Error fetching events for course ${course.id}:`, eventsError);
-        }
-
-        const nextEvent = events && events.length > 0 ? events[0] : null;
-
-        return {
-          id: course.id,
-          name: course.name,
-          code: course.code,
-          term: course.term,
-          nextDeadline: nextEvent ? {
-            name: nextEvent.name,
-            type: nextEvent.type,
-            dueDate: nextEvent.due_date,
-            releaseDate: nextEvent.release_date,
-          } : null,
-        };
-      })
-    );
-
-    return coursesWithDeadlines;
-
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Failed to fetch courses with deadlines:', error.message);
-      throw new Error(`Failed to fetch courses: ${error.message}`);
-    }
-    throw error;
-  }
+export async function getUpcomingDeadlines(userId: string, daysAhead = 30) {
+  const today = new Date().toISOString().split('T')[0];
+  const cutoff = new Date(Date.now() + daysAhead * 86_400_000).toISOString().split('T')[0];
+  const { data, error } = await supabase
+    .from('course_deadlines')
+    .select(`
+      id, title, type, due_date,
+      courses!inner(id, course_name, user_id)
+    `)
+    .eq('courses.user_id', userId)
+    .gte('due_date', today)
+    .lte('due_date', cutoff)
+    .order('due_date');
+  if (error) throw error;
+  return data ?? [];
 }

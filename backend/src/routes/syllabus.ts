@@ -1,20 +1,19 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import { extractSyllabusData } from '../services/llm';
-import { storeSyllabusData } from '../services/database';
-import { extractTextFromPDF, isPDF } from '../services/pdf';
+import pdfParse from 'pdf-parse';
+import { extractSyllabus } from '../services/syllabusExtractor';
+import { normalizeTopics } from '../services/topicNormalization';
+import { createCourse, insertCourseTopics, insertDeadlines, DEV_USER_ID } from '../services/database';
 
 const router = Router();
 
-// Configure multer for file uploads (store in memory)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
-  },
-  fileFilter: (req, file, cb) => {
-    // Accept PDF and text files
-    if (isPDF(file.mimetype, file.originalname) || file.mimetype === 'text/plain') {
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (_req, file, cb) => {
+    const isPdf = file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf');
+    const isTxt = file.mimetype === 'text/plain' || file.originalname.toLowerCase().endsWith('.txt');
+    if (isPdf || isTxt) {
       cb(null, true);
     } else {
       cb(new Error('Only PDF and text files are allowed'));
@@ -23,66 +22,37 @@ const upload = multer({
 });
 
 /**
- * POST /api/upload-syllabus
+ * POST /api/syllabus/upload
  *
- * Accepts syllabus as PDF file OR raw text, extracts structured data via LLM,
- * validates it, and stores it in Supabase.
+ * Accepts syllabus as multipart PDF/TXT file OR JSON { syllabusText: string }.
+ * Extracts structured data, normalizes topics globally, stores everything in DB.
  *
- * Two ways to use this endpoint:
- *
- * 1. File upload (multipart/form-data):
- *    - Field name: "file"
- *    - Accepted types: PDF, TXT
- *
- * 2. Text input (application/json):
- *    - Body: { "syllabusText": "string" }
- *
- * Response:
- * {
- *   "success": true,
- *   "courseId": number,
- *   "message": "string",
- *   "data": {
- *     "courseName": "string",
- *     "courseCode": "string",
- *     "term": "string",
- *     "eventsCount": number
- *   },
- *   "extractedData": { ... full syllabus data ... }
- * }
+ * Response: { success, courseId, course_name, topic_count, deadline_count }
  */
-router.post('/upload-syllabus', upload.single('file'), async (req: Request, res: Response) => {
+router.post('/upload', upload.single('file'), async (req: Request, res: Response) => {
   try {
     let syllabusText: string;
 
-    // Determine input source: file upload or text body
     if (req.file) {
-      console.log(`📎 Received file: ${req.file.originalname} (${req.file.size} bytes)`);
-
-      // Extract text from PDF
-      if (isPDF(req.file.mimetype, req.file.originalname)) {
-        console.log('📄 Extracting text from PDF...');
-        syllabusText = await extractTextFromPDF(req.file.buffer);
+      const isPdf = req.file.mimetype === 'application/pdf' ||
+        req.file.originalname.toLowerCase().endsWith('.pdf');
+      if (isPdf) {
+        const pdfData = await pdfParse(req.file.buffer);
+        syllabusText = pdfData.text.trim();
       } else {
-        // Text file
         syllabusText = req.file.buffer.toString('utf-8');
       }
     } else {
-      // No file uploaded, check for text in body
       const { syllabusText: bodyText } = req.body;
-
       if (!bodyText || typeof bodyText !== 'string') {
         return res.status(400).json({
           success: false,
-          error: 'Missing syllabus data. Provide either a file upload or syllabusText in request body',
+          error: 'Provide either a file upload or syllabusText in the request body',
         });
       }
-
       syllabusText = bodyText;
-      console.log('📝 Received syllabus text from request body');
     }
 
-    // Validate text length
     if (syllabusText.trim().length < 50) {
       return res.status(400).json({
         success: false,
@@ -90,65 +60,51 @@ router.post('/upload-syllabus', upload.single('file'), async (req: Request, res:
       });
     }
 
-    console.log(`📄 Processing syllabus text (${syllabusText.length} characters)`);
+    // 1. Extract structured data via OpenAI
+    const extraction = await extractSyllabus(syllabusText);
 
-    // Step 1: Extract structured data using LLM
-    console.log('🤖 Calling OpenAI for structured extraction...');
-    const extractedData = await extractSyllabusData(syllabusText);
+    // 2. Create course record
+    const courseId = await createCourse(
+      DEV_USER_ID,
+      extraction.course_name,
+      extraction.course_code ?? null,
+      extraction.semester ?? 'Unknown Semester'
+    );
 
-    // Step 2: Store in Supabase (data is already validated by Zod in extractSyllabusData)
-    console.log('💾 Storing data in Supabase...');
-    const courseId = await storeSyllabusData(extractedData);
+    // 3. Normalize topics against global topic graph
+    const normalizedTopics = await normalizeTopics(extraction.topics);
 
-    // Step 3: Return success response with full extracted data
+    // 4. Deduplicate by global_topic_id (two syllabus topics may map to the same canonical topic)
+    const seen = new Set<number>();
+    const uniqueTopics = normalizedTopics.filter((t) => {
+      if (seen.has(t.global_topic_id)) return false;
+      seen.add(t.global_topic_id);
+      return true;
+    });
+
+    // 5. Link topics to course
+    await insertCourseTopics(courseId, uniqueTopics);
+
+    // 5. Insert deadlines
+    await insertDeadlines(courseId, extraction.deadlines);
+
     return res.status(201).json({
       success: true,
       courseId,
-      message: `Successfully processed syllabus for ${extractedData.course.code}: ${extractedData.course.name}`,
-      data: {
-        courseName: extractedData.course.name,
-        courseCode: extractedData.course.code,
-        term: extractedData.course.term,
-        units: extractedData.course.units,
-        eventsCount: extractedData.events.length,
-      },
-      extractedData, // Include full extracted data for summary display
+      course_name: extraction.course_name,
+      topic_count: uniqueTopics.length,
+      deadline_count: extraction.deadlines.length,
     });
 
   } catch (error) {
-    console.error('❌ Error processing syllabus:', error);
-
-    // Handle different error types
+    console.error('Error processing syllabus:', error);
     if (error instanceof Error) {
-      // Multer file size error
       if (error.message.includes('File too large')) {
-        return res.status(413).json({
-          success: false,
-          error: 'File too large. Maximum size is 10MB',
-        });
+        return res.status(413).json({ success: false, error: 'File too large. Max 10MB.' });
       }
-
-      // Check if it's a validation error (Zod)
-      if (error.name === 'ZodError') {
-        return res.status(422).json({
-          success: false,
-          error: 'Validation failed: LLM output does not match expected schema',
-          details: error.message,
-        });
-      }
-
-      // Generic error response
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
+      return res.status(500).json({ success: false, error: error.message });
     }
-
-    // Unknown error
-    return res.status(500).json({
-      success: false,
-      error: 'An unexpected error occurred',
-    });
+    return res.status(500).json({ success: false, error: 'Unexpected error' });
   }
 });
 

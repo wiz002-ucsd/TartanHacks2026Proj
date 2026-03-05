@@ -20,13 +20,14 @@ export default function AppLayout() {
 
   const isActive = (path: string) => {
     if (path === '/home') return currentPath === '/home' || currentPath.startsWith('/courses');
+    if (path === '/plan') return currentPath === '/plan';
     return currentPath === path;
   };
 
   const NAV_ITEMS = [
-    { path: '/home',      label: 'Courses' },
-    { path: '/dashboard', label: 'AI Dashboard' },
-    { path: '/upload',    label: 'Upload Syllabus' },
+    { path: '/home',   label: 'Courses' },
+    { path: '/upload', label: 'Upload Syllabus' },
+    { path: '/plan',   label: 'Weekly Plan' },
   ];
 
   return (
@@ -145,6 +146,33 @@ export default function AppLayout() {
               );
             })}
           </nav>
+
+          {/* Log out */}
+          <button
+            onClick={() => { logout(); navigate('/'); }}
+            style={{
+              padding: '8px 18px',
+              background: 'none',
+              color: theme.colors.text.secondary,
+              border: `1px solid ${theme.colors.border.primary}`,
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = theme.colors.text.primary;
+              e.currentTarget.style.borderColor = 'rgba(230,126,34,0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = theme.colors.text.secondary;
+              e.currentTarget.style.borderColor = theme.colors.border.primary;
+            }}
+          >
+            Log out
+          </button>
         </div>
       </nav>
 

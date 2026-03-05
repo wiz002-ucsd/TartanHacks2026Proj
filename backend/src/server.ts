@@ -3,43 +3,43 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import syllabusRouter from './routes/syllabus';
 import coursesRouter from './routes/courses';
-import aiAdvisorRouter from './routes/ai-advisor';
+import quizzesRouter from './routes/quizzes';
+import strategyRouter from './routes/strategy';
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors()); // Enable CORS for frontend requests
-app.use(express.json({ limit: '10mb' })); // Parse JSON bodies (increase limit for large syllabi)
+// CORS: set FRONTEND_URL in production to restrict origins
+const corsOrigin: string | boolean = process.env.FRONTEND_URL || true;
+app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
-app.get('/health', (req, res) => {
+// Health check
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // API routes
-app.use('/api', syllabusRouter);
+app.use('/api/syllabus', syllabusRouter);
 app.use('/api', coursesRouter);
-app.use('/api', aiAdvisorRouter);
+app.use('/api/quizzes', quizzesRouter);
+app.use('/api/strategy', strategyRouter);
 
-// 404 handler
-app.use((req, res) => {
+// 404
+app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
 app.listen(PORT, () => {
-  console.log(`✓ Server running on http://localhost:${PORT}`);
-  console.log(`✓ Health check: http://localhost:${PORT}/health`);
-  console.log(`✓ API endpoint: http://localhost:${PORT}/api/upload-syllabus`);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Health: http://localhost:${PORT}/health`);
 });
