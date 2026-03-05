@@ -1,14 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import type { CoursesResponse, CourseWithDeadline } from '../types/syllabus';
+import type { CourseWithDeadlines, Deadline } from '../types/index';
 
 // Backend API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
+function getNextDeadline(deadlines: Deadline[]): Deadline | null {
+  const today = new Date().toISOString().split('T')[0];
+  return deadlines
+    .filter((d) => d.due_date >= today)
+    .sort((a, b) => a.due_date.localeCompare(b.due_date))[0] ?? null;
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [courses, setCourses] = useState<CourseWithDeadline[]>([]);
+  const [courses, setCourses] = useState<CourseWithDeadlines[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +38,7 @@ export default function Home() {
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/courses`);
-      const data: CoursesResponse = await res.json();
+      const data: { success: boolean; courses: CourseWithDeadlines[]; error?: string } = await res.json();
 
       if (data.success) {
         setCourses(data.courses);
@@ -296,7 +303,9 @@ export default function Home() {
           gap: '28px',
           animation: 'slideUp 0.6s ease-out',
         }}>
-          {courses.map((course, index) => (
+          {courses.map((course, index) => {
+            const nextDeadline = getNextDeadline(course.course_deadlines);
+            return (
             <div
               key={course.id}
               onClick={() => navigate(`/courses/${course.id}`)}
@@ -337,22 +346,24 @@ export default function Home() {
 
               {/* Course Header */}
               <div style={{ marginBottom: '20px' }}>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: '6px 16px',
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)',
-                    border: '1px solid rgba(59, 130, 246, 0.3)',
-                    color: '#60a5fa',
-                    borderRadius: '25px',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    marginBottom: '14px',
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  {course.code}
-                </div>
+                {course.course_code && (
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '6px 16px',
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%)',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      color: '#60a5fa',
+                      borderRadius: '25px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      marginBottom: '14px',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    {course.course_code}
+                  </div>
+                )}
                 <h3 style={{
                   margin: '10px 0',
                   fontSize: '20px',
@@ -360,7 +371,7 @@ export default function Home() {
                   color: '#e5e5e5',
                   lineHeight: '1.3',
                 }}>
-                  {course.name}
+                  {course.course_name}
                 </h3>
                 <p style={{
                   margin: '6px 0 0 0',
@@ -368,7 +379,7 @@ export default function Home() {
                   color: '#a3a3a3',
                   fontWeight: '500',
                 }}>
-                  {course.term}
+                  {course.semester}
                 </p>
               </div>
 
@@ -380,7 +391,7 @@ export default function Home() {
                   marginTop: '20px',
                 }}
               >
-                {course.nextDeadline ? (
+                {nextDeadline ? (
                   <div>
                     <div style={{
                       display: 'flex',
@@ -404,21 +415,21 @@ export default function Home() {
                       fontWeight: '600',
                       color: '#e5e5e5',
                     }}>
-                      {course.nextDeadline.name}
+                      {nextDeadline.title}
                     </p>
                     <div
                       style={{
                         display: 'inline-block',
                         padding: '8px 16px',
-                        background: `linear-gradient(135deg, ${getUrgencyColor(course.nextDeadline.dueDate)} 0%, ${getUrgencyColor(course.nextDeadline.dueDate)}dd 100%)`,
+                        background: `linear-gradient(135deg, ${getUrgencyColor(nextDeadline.due_date)} 0%, ${getUrgencyColor(nextDeadline.due_date)}dd 100%)`,
                         color: '#fff',
                         borderRadius: '10px',
                         fontSize: '14px',
                         fontWeight: '700',
-                        boxShadow: `0 4px 12px ${getUrgencyColor(course.nextDeadline.dueDate)}40`,
+                        boxShadow: `0 4px 12px ${getUrgencyColor(nextDeadline.due_date)}40`,
                       }}
                     >
-                      {formatDate(course.nextDeadline.dueDate)}
+                      {formatDate(nextDeadline.due_date)}
                     </div>
                   </div>
                 ) : (
@@ -441,7 +452,8 @@ export default function Home() {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

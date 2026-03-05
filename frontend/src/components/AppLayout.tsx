@@ -1,8 +1,10 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
 
   const currentPath = location.pathname;
 
@@ -111,14 +113,6 @@ export default function AppLayout() {
                 Courses
               </button>
               <button
-                onClick={() => navigate('/dashboard')}
-                style={navButtonStyle('/dashboard')}
-                onMouseEnter={(e) => handleMouseEnter(e, '/dashboard')}
-                onMouseLeave={(e) => handleMouseLeave(e, '/dashboard')}
-              >
-                AI Dashboard
-              </button>
-              <button
                 onClick={() => navigate('/upload')}
                 style={navButtonStyle('/upload')}
                 onMouseEnter={(e) => handleMouseEnter(e, '/upload')}
@@ -126,8 +120,40 @@ export default function AppLayout() {
               >
                 Upload Syllabus
               </button>
+              <button
+                onClick={() => navigate('/plan')}
+                style={navButtonStyle('/plan')}
+                onMouseEnter={(e) => handleMouseEnter(e, '/plan')}
+                onMouseLeave={(e) => handleMouseLeave(e, '/plan')}
+              >
+                Weekly Plan
+              </button>
             </div>
           </div>
+          <button
+            onClick={() => { logout(); navigate('/'); }}
+            style={{
+              padding: '8px 20px',
+              background: 'none',
+              color: '#a3a3a3',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#e5e5e5';
+              e.currentTarget.style.borderColor = 'rgba(230, 126, 34, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#a3a3a3';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            }}
+          >
+            Log out
+          </button>
         </div>
       </nav>
 
